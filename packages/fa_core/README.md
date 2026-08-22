@@ -21,6 +21,39 @@ a propósito.
 | `SafeNotifier` | Un `ChangeNotifier` que deja de avisar al destruirse. |
 | `comoNombrePropio` | Baja las mayúsculas de la INE al mostrar un nombre. |
 
+## El hexágono que hace posible todo esto
+
+`fa_core` es el borde común de nueve hexágonos. Cada módulo tiene su dominio en
+el centro —entidades y reglas, sin importar nada— y declara **puertos**:
+interfaces que la infraestructura implementa. La dependencia queda invertida, y
+por eso el mismo módulo funciona contra el BFF o contra un interceptor en
+memoria sin que su negocio se entere.
+
+```mermaid
+flowchart TB
+    subgraph mod["Un módulo cualquiera"]
+        direction TB
+        PR["presentation<br/><i>Screen · Provider</i>"]
+        AP["application<br/><i>casos de uso</i>"]
+        DO["domain<br/><b>entidades · reglas · puertos</b>"]
+        IN["infrastructure<br/><i>adaptadores · DTOs · mocks</i>"]
+        PR --> AP --> DO
+        IN -.->|"implementa los puertos"| DO
+    end
+
+    CORE["fa_core<br/><i>IModule · ApiClient · AppSession</i>"]
+    IN --> CORE
+
+    classDef nucleo fill:#0D47A1,color:#fff,stroke:#0D47A1
+    classDef borde fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    class DO nucleo
+    class PR,AP,IN,CORE borde
+```
+
+La regla de oro es la dirección de las flechas: **hacia el centro**. Si un día
+`domain/` necesita importar algo de `infrastructure/`, el diseño se rompió — y
+se nota, porque el import no existe.
+
 ## Las dos decisiones que explican el resto
 
 **El shell no conoce a nadie.** `IModule` es la única forma de aparecer en la

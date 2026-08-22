@@ -176,15 +176,38 @@ El home es el caso interesante, porque **no lo escribe nadie**. El shell pinta e
 saludo y el nav; el contenido lo aportan los módulos y él sólo lo apila en el
 orden que cada uno declara:
 
-```
-┌─ DsBrandBar ──────────────── fa_shell, sobre todas las pantallas
-│  avatar (fa_profile)  ·  logo  ·  campana (fa_notifications → badge)
-├─ "Hola, Emmanuel" ────────── fa_shell
-├─ MI LÍNEA DE DISTRIBUIDOR ── fa_placements   homeCardOrder = 10
-├─ MIS CRÉDITOS ───────────── fa_credit       homeCardOrder = 20
-├─ Oportunidades ──────────── fa_credit       (dentro de su misma card)
-└─ nav: Inicio · Movimientos · Colocaciones · Beneficiarios
-        └ fa_shell   fa_wallet    fa_placements (ambos, si hay línea)
+```mermaid
+flowchart TD
+    subgraph bar["DsBrandBar · fa_shell, sobre todas las pantallas"]
+        direction LR
+        AV["avatar<br/><i>→ fa_profile</i>"]
+        LO["isotipo + Kredius"]
+        CA["campana<br/><i>badge de fa_notifications</i>"]
+    end
+
+    subgraph inicio["Tab Inicio · lo apila el shell por homeCardOrder"]
+        direction TB
+        SAL["Hola, Emmanuel<br/><i>fa_shell</i>"]
+        L1["MI LÍNEA DE DISTRIBUIDOR<br/><i>fa_placements · orden 10</i>"]
+        L2["MIS CRÉDITOS<br/><i>fa_credit · orden 20</i>"]
+        L3["Oportunidades<br/><i>fa_credit, en su misma card</i>"]
+        SAL --> L1 --> L2 --> L3
+    end
+
+    subgraph nav["Bottom nav · tabs que cada módulo reclama"]
+        direction LR
+        N1["Inicio<br/><i>fa_shell</i>"]
+        N2["Movimientos<br/><i>fa_wallet</i>"]
+        N3["Colocaciones<br/><i>fa_placements</i>"]
+        N4["Beneficiarios<br/><i>fa_placements</i>"]
+    end
+
+    bar --> inicio --> nav
+
+    classDef propio fill:#0D47A1,color:#fff,stroke:#0D47A1
+    classDef ajeno fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    class SAL,N1 propio
+    class L1,L2,L3,N2,N3,N4,AV,CA ajeno
 ```
 
 `homeCardOrder` no es cosmético: es **prelación**. Primero el dinero del que el
@@ -222,25 +245,85 @@ fa_wallet/lib/src/
     └── screens/
 ```
 
-### 2.2 Flujo de datos en un módulo
+### 2.2 Arquitectura hexagonal: puertos y adaptadores
 
-```
-Pantalla (Screen)
-    ↓  llama a
-Provider (ChangeNotifier)
-    ↓  ejecuta
-UseCase (Application)
-    ↓  llama a la interfaz
-IRepository (Domain Port)
-    ↑  implementada por
-RepositoryImpl (Infrastructure)
-    ↓  hace HTTP via
-ApiClient (fa_core — interfaz abstracta)
-    ↑  implementada por
-DioApiClient (fa_shell) ← aquí viven los interceptores mock
+Cada módulo es un hexágono. En el centro está el dominio —las entidades y sus
+reglas— y **no importa nada**: ni Dio, ni Flutter, ni el módulo de al lado. A su
+alrededor hay una capa de aplicación que orquesta casos de uso, y en el borde los
+adaptadores que hablan con el mundo.
+
+La pieza que lo hace funcionar es el **puerto**: una interfaz que declara el
+dominio y que implementa la infraestructura. La dependencia queda invertida —el
+dominio no depende del HTTP, el HTTP depende del dominio— y por eso se puede
+cambiar el backend por un mock sin tocar una línea de negocio.
+
+```mermaid
+flowchart LR
+    subgraph entrada["Adaptadores de entrada"]
+        UI["Screen<br/>Provider"]
+    end
+
+    subgraph hex["El hexágono del módulo"]
+        direction TB
+        APP["Aplicación<br/><i>casos de uso</i>"]
+        DOM["Dominio<br/><b>entidades y reglas</b><br/><i>no importa nada</i>"]
+        PORT>"Puerto<br/>IWalletRepository"]
+        APP --> DOM
+        APP -.->|"depende de la interfaz"| PORT
+    end
+
+    subgraph salida["Adaptadores de salida"]
+        IMPL["WalletRepositoryImpl"]
+        MOCK["WalletMockInterceptor"]
+        HTTP["ApiClient → BFF"]
+    end
+
+    UI --> APP
+    IMPL -.->|"implementa"| PORT
+    IMPL --> HTTP
+    IMPL --> MOCK
+
+    classDef nucleo fill:#0D47A1,color:#fff,stroke:#0D47A1
+    classDef borde fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    class DOM,APP nucleo
+    class UI,IMPL,MOCK,HTTP borde
 ```
 
-El módulo **nunca sabe** si está hablando con un servidor real o con un mock. Solo conoce la interfaz `ApiClient`.
+Leído de arriba abajo, una petición recorre esto:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant S as Screen
+    participant P as Provider
+    participant U as UseCase
+    participant R as IRepository<br/>(puerto)
+    participant I as RepositoryImpl<br/>(adaptador)
+    participant A as ApiClient
+
+    S->>P: el usuario toca
+    P->>U: ejecuta el caso de uso
+    U->>R: pide por la interfaz
+    Note over R,I: aquí se invierte la dependencia
+    R-->>I: resuelto en tiempo de inyección
+    I->>A: HTTP
+    A-->>I: JSON
+    I-->>U: entidad de dominio
+    U-->>P: resultado
+    P-->>S: notifica y repinta
+```
+
+**Lo que compra el hexágono, en concreto:**
+
+| Se puede… | Porque… |
+|---|---|
+| Correr toda la app sin backend | el adaptador cambia, el dominio no se entera |
+| Probar reglas de negocio sin widgets ni red | el dominio no importa Flutter ni Dio |
+| Cambiar de Dio a otro cliente | sólo se reescribe el adaptador de salida |
+| Vender el módulo suelto | el hexágono viaja completo, con sus puertos |
+
+El módulo **nunca sabe** si habla con un servidor real o con un mock: sólo conoce
+la interfaz `ApiClient`. Quién la implementa se decide en `fa_shell`, al arrancar.
 
 ### 2.3 Desacoplamiento entre módulos
 
@@ -255,20 +338,42 @@ Los módulos no se importan entre sí directamente. La comunicación inter-módu
 
 ## 3. Mapa de Dependencias
 
-```
-fa_core ──────────────────────────────────────────┐
-                                                   │ dependen de
-fa_design_system ─────────────────────────────────┤
-                                                   ↓
-fa_auth          →  fa_core + fa_design_system
-fa_onboarding    →  fa_core + fa_design_system
-fa_wallet        →  fa_core + fa_design_system
-fa_notifications →  fa_core + fa_design_system
-fa_profile       →  fa_core + fa_design_system
-fa_credit        →  fa_core + fa_design_system + fa_wallet  ← único acoplamiento horizontal
+```mermaid
+flowchart TD
+    subgraph plataforma["Plataforma"]
+        CORE["fa_core<br/><i>contratos</i>"]
+        DS["fa_design_system<br/><i>tokens y componentes</i>"]
+    end
 
-fa_shell         →  todos los anteriores
+    subgraph dominio["Módulos de dominio"]
+        AUTH["fa_auth"]
+        ONB["fa_onboarding"]
+        WAL["fa_wallet"]
+        NOT["fa_notifications"]
+        PRO["fa_profile"]
+        CRE["fa_credit"]
+        PLA["fa_placements"]
+    end
+
+    SHELL["fa_shell<br/><b>la app</b>"]
+
+    AUTH & ONB & WAL & NOT & PRO & CRE & PLA --> CORE
+    AUTH & ONB & WAL & NOT & PRO & CRE & PLA --> DS
+    CRE -->|"único acoplamiento horizontal"| WAL
+    SHELL --> AUTH & ONB & WAL & NOT & PRO & CRE & PLA
+
+    classDef plat fill:#0D47A1,color:#fff,stroke:#0D47A1
+    classDef dom fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    classDef app fill:#00B894,color:#fff,stroke:#00B894
+    class CORE,DS plat
+    class AUTH,ONB,WAL,NOT,PRO,CRE,PLA dom
+    class SHELL app
 ```
+
+Las flechas van **hacia adentro**: todo depende de la plataforma, nada de la
+plataforma depende de un dominio, y ningún dominio depende de otro salvo
+`fa_credit → fa_wallet`, que es una dependencia del negocio —el desembolso
+aterriza en la cuenta— y no un atajo.
 
 **Regla de hierro**: ningún paquete `fa_feature` puede importar a otro `fa_feature`, salvo `fa_credit → fa_wallet` que es explícito y justificado.
 
@@ -446,16 +551,19 @@ Se inicializa una vez al inicio de cada entry point (`main.dart`, `main_qa.dart`
 
 El mock **no usa un servidor**. Se implementa como un `Interceptor` de Dio: intercepta la request antes de que salga a la red, construye una response JSON y la devuelve directamente.
 
-```
-Request HTTP
-    ↓
-Dio interceptors pipeline
-    ↓
-XxxMockInterceptor.onRequest()
-    ↓
-  ¿path coincide?
-  SÍ → handler.resolve(Response(data: mockData))  ← nunca toca la red
-  NO → handler.next(options)                       ← pasa al siguiente interceptor
+```mermaid
+flowchart TD
+    REQ["Petición HTTP"] --> PIPE["Cadena de interceptores de Dio"]
+    PIPE --> MOCK["XxxMockInterceptor.onRequest()"]
+    MOCK --> Q{"¿el path<br/>es suyo?"}
+    Q -->|"sí"| RES["handler.resolve(...)<br/><b>nunca toca la red</b>"]
+    Q -->|"no"| NEXT["handler.next(options)<br/>pasa al siguiente"]
+    NEXT --> RED[("Red · BFF")]
+
+    classDef corta fill:#00B894,color:#fff,stroke:#00B894
+    classDef sigue fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    class RES corta
+    class NEXT,RED sigue
 ```
 
 Cada módulo tiene su propio interceptor en `infrastructure/mock/`. Esto es importante: el módulo **encapsula su propio mock**, nadie más necesita saber cómo generar datos de wallet o crédito.

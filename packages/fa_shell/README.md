@@ -16,6 +16,43 @@ _modules = [
 ];
 ```
 
+```mermaid
+flowchart LR
+    subgraph mods["Los módulos, que no se conocen entre sí"]
+        direction TB
+        M1["fa_auth"]
+        M2["fa_onboarding"]
+        M3["fa_credit"]
+        M4["fa_placements"]
+        M5["fa_wallet · fa_notifications · fa_profile"]
+    end
+
+    INJ["ShellInjection<br/><i>el único que los nombra</i>"]
+    IM{{"IModule<br/><b>el contrato</b>"}}
+
+    subgraph app["La app"]
+        direction TB
+        R["Router"]
+        MP["MultiProvider"]
+        H["Home + nav"]
+        B["DsBrandBar"]
+    end
+
+    M1 & M2 & M3 & M4 & M5 --> INJ
+    INJ --> IM
+    IM -->|"routes"| R
+    IM -->|"providers"| MP
+    IM -->|"ownedTabs · buildHomeCard"| H
+    IM -->|"displayName · badgeCount"| B
+
+    classDef contrato fill:#00B894,color:#fff,stroke:#00B894
+    classDef shell fill:#0D47A1,color:#fff,stroke:#0D47A1
+    classDef mod fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    class IM contrato
+    class INJ,R,MP,H,B shell
+    class M1,M2,M3,M4,M5 mod
+```
+
 De ahí salen tres cosas, todas por contrato:
 
 | El shell pide | El módulo responde | Se ve en |

@@ -10,6 +10,28 @@ consulta de buró autorizada. 32 archivos, el módulo más largo del recorrido.
 | Tarjeta del home | ninguna |
 | Depende de | `fa_core`, `fa_design_system` |
 
+```mermaid
+flowchart TD
+    W["Bienvenida"] --> P["Privacidad<br/><i>y autorización de buró</i>"]
+    P --> PU{"¿Para qué<br/>es el crédito?"}
+    PU -->|"para mí"| T["Celular"]
+    PU -->|"para colocar"| T
+    T --> O["Código SMS"]
+    O --> D["Documentos<br/><i>INE · selfie · comprobante</i>"]
+    D -->|"OCR al completar<br/>frente y reverso"| DA["Datos<br/><i>prellenados</i>"]
+    DA --> C["Contraseña"]
+    C --> AN["Análisis<br/><i>cuenta · buró · círculo<br/>capacidad de pago</i>"]
+    AN -->|"uso propio"| OP["Oportunidades"]
+    AN -->|"colocación"| HO["Home<br/><i>línea en comité</i>"]
+
+    classDef fin fill:#00B894,color:#fff,stroke:#00B894
+    classDef paso fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    classDef azul fill:#0D47A1,color:#fff,stroke:#0D47A1
+    class OP,HO fin
+    class W,P,T,O,D,DA,C paso
+    class AN azul
+```
+
 ## El orden importa
 
 1. **Bienvenida** → **privacidad**. El alta abre pidiendo permiso: nada se pide
@@ -33,3 +55,19 @@ consulta de buró autorizada. 32 archivos, el módulo más largo del recorrido.
   decir que el problema fue la CURP.
 - Tras registrar, el primer login puede llegar antes que la credencial: identity
   la crea por Kafka. `kyc_repository_impl` reintenta con espera creciente.
+
+## Cómo está construido
+
+Arquitectura hexagonal, como todos los módulos: el dominio en el centro sin
+importar nada, los casos de uso alrededor, y los adaptadores —HTTP, mocks,
+DTOs— en el borde implementando los puertos que el dominio declara. El diagrama
+y la regla de las flechas están en
+[`fa_core`](../fa_core/README.md#el-hexágono-que-hace-posible-todo-esto).
+
+```
+lib/src/
+├── domain/          entidades, reglas y puertos
+├── application/     casos de uso
+├── infrastructure/  adaptadores, DTOs y el mock del módulo
+└── presentation/    providers y pantallas
+```

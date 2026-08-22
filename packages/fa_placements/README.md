@@ -20,9 +20,25 @@ viendo un catálogo.
 
 ## El flujo
 
-Enviar préstamo → a quién (nombre, celular, cómo la conoces) → monto, plazo y
-bonificación → liga enviada. La beneficiaria completa su KYC desde esa liga; el
-distribuidor ve su historial y decide. Los estados viven en `PlacementStatus`
+```mermaid
+flowchart LR
+    A["Enviar préstamo"] --> B["¿A quién?<br/><i>nombre · celular<br/>cómo la conoces</i>"]
+    B --> C["Monto, plazo<br/>y bonificación"]
+    C --> D["Liga enviada"]
+    D -.->|"la beneficiaria<br/>abre la liga"| E["Su KYC"]
+    E --> F["Buró y decisión<br/><i>la toma el distribuidor</i>"]
+    F --> G["Colocación viva"]
+
+    classDef fin fill:#00B894,color:#fff,stroke:#00B894
+    classDef paso fill:#EBF0F7,color:#0F1A2E,stroke:#C9D3E3
+    classDef otro fill:#D6E4FF,color:#0F1A2E,stroke:#0D47A1
+    class G fin
+    class A,B,C,D,F paso
+    class E otro
+```
+
+Los pasos en azul claro los hace **otra persona**, en su propio teléfono: por eso
+la liga y no un formulario más del distribuidor. Los estados viven en `PlacementStatus`
 (10 valores, incluido `failed`) y la bonificación sale de una tabla de comisión
 decreciente `[0.20, 0.17, 0.14, 0.10, 0.06]`.
 
@@ -34,3 +50,19 @@ línea se aprueba — **la operación** (Colocaciones) y **el directorio**
 (Beneficiarios) del mismo dominio.
 
 El contrato de API está congelado en `docs/KREDIUS_COLOCACION_API.md`.
+
+## Cómo está construido
+
+Arquitectura hexagonal, como todos los módulos: el dominio en el centro sin
+importar nada, los casos de uso alrededor, y los adaptadores —HTTP, mocks,
+DTOs— en el borde implementando los puertos que el dominio declara. El diagrama
+y la regla de las flechas están en
+[`fa_core`](../fa_core/README.md#el-hexágono-que-hace-posible-todo-esto).
+
+```
+lib/src/
+├── domain/          entidades, reglas y puertos
+├── application/     casos de uso
+├── infrastructure/  adaptadores, DTOs y el mock del módulo
+└── presentation/    providers y pantallas
+```
