@@ -1,0 +1,44 @@
+name: fintech_app
+
+packages:
+  - packages/**
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  test:all:
+    run: melos exec --concurrency=4 -- flutter test
+    description: Corre tests en todos los paquetes
+
+  analyze:all:
+    run: melos exec -- flutter analyze
+    description: Analiza todos los paquetes
+
+  gen:all:
+    run: melos exec --depends-on=build_runner -- dart run build_runner build --delete-conflicting-outputs
+    description: Genera código en paquetes que lo necesiten
+
+  clean:all:
+    run: melos exec -- flutter clean
+    description: Limpia todos los paquetes
+
+  test:fa_core:
+    run: melos exec --scope="fa_core" -- flutter test
+  test:fa_auth:
+    run: melos exec --scope="fa_auth" -- flutter test
+  test:fa_onboarding:
+    run: melos exec --scope="fa_onboarding" -- flutter test
+  test:fa_wallet:
+    run: melos exec --scope="fa_wallet" -- flutter test
+  test:fa_credit:
+    run: melos exec --scope="fa_credit" -- flutter test
+  test:fa_placements:
+    run: melos exec --scope="fa_placements" -- flutter test
+  test:fa_notifications:
+    run: melos exec --scope="fa_notifications" -- flutter test
+  test:fa_profile:
+    run: melos exec --scope="fa_profile" -- flutter test
+  test:fa_shell:
+    run: melos exec --scope="fa_shell" -- flutter test

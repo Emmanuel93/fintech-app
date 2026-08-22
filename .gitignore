@@ -1,0 +1,95 @@
+# ── Dart / Flutter ───────────────────────────────────────────────────────────
+.dart_tool/
+build/
+.packages
+.pub-cache/
+.pub/
+coverage/
+*.dart.js
+*.info.json
+doc/api/
+
+# Generados por `melos bootstrap` en cada paquete: reescriben las dependencias
+# de path a la copia local, así que son de la máquina, no del proyecto.
+pubspec_overrides.yaml
+
+# Los lockfiles de los paquetes **de librería** no se versionan (convención de
+# Dart: sólo las aplicaciones fijan sus versiones). Aquí además los reescribe
+# `melos bootstrap` en cada arranque, así que versionarlos era garantizar un
+# conflicto por cada cambio de dependencia, en nueve archivos a la vez.
+# Se conservan los dos que sí mandan sobre la build: el de la raíz y el de
+# fa_shell, que es la aplicación.
+packages/*/pubspec.lock
+!packages/fa_shell/pubspec.lock
+
+# ── iOS ──────────────────────────────────────────────────────────────────────
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/ephemeral/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/*.xcuserdatad/
+**/xcuserdata/
+*.ipa
+*.dSYM.zip
+
+# ── Android ──────────────────────────────────────────────────────────────────
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/**/GeneratedPluginRegistrant.java
+*.jks
+*.keystore
+*.apk
+*.aab
+
+# ── macOS / Windows / Linux desktop ──────────────────────────────────────────
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
+
+# Claude Code: configuración y skills locales de quien desarrolla, con rutas
+# absolutas de su home. No es del proyecto.
+.claude/
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ── Sistema ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Bundle de handoff de Claude Design, tal como lo exporta la herramienta: trae
+# el backoffice, la landing, una web estática y ~12 MB de capturas sueltas que
+# no alimentan esta app. Lo que sí importa ya vive versionado donde corresponde
+# —la especificación del journey en docs/design/, la marca en
+# packages/fa_design_system/assets/brand/—, así que la carpeta de exportación
+# se queda fuera aunque se vuelva a descargar.
+flujo-de-cr-dito-kredius/
+
+# ── Evidencias de las corridas E2E ───────────────────────────────────────────
+# Videos y capturas del showcase: se regeneran corriendo
+# `journey_connected_showcase_test.dart` contra el simulador, pesan más de
+# 500 MB entre los cinco y GitHub rechaza archivos de más de 100 MB. Cómo
+# volver a grabarlos está en docs/KREDIUS_E2E_VIDEOS.md.
+evidencias/
+*.mp4
+*.mov
+*.png.bak
+screenshots/
+integration_test/failures/

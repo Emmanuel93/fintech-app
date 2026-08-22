@@ -1,0 +1,21 @@
+name: kredius_workspace
+description: |
+  Monorepo de Kredius — paquetes fa_* independientes y comercializables.
+  Cada paquete corresponde a un dominio y puede publicarse en pub.dev por separado.
+
+  Paquetes:
+    fa_core          → contratos, ApiClient, IModule
+    fa_design_system → UI Kit compartido (Material Design 3)
+    fa_auth          → login, sesión
+    fa_onboarding    → KYC, OTP, OCR de INE
+    fa_wallet        → wallet débito
+    fa_credit        → crédito revolvente
+    fa_notifications → bandeja de notificaciones
+    fa_profile       → perfil de usuario
+    fa_shell         → app ensambladora (entry point)
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dev_dependencies:
+  melos: ^6.3.2

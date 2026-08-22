@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E8ECF3;font-family:'Inter',system-ui,sans-serif;color:#1A1C1E;-webkit-font-smoothing:antialiased}
+a{color:#0D47A1;text-decoration:none}a:hover{color:#001A42}
+@keyframes kr-spin{to{transform:rotate(360deg)}}
+@keyframes kr-pulse{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1)}}
+@keyframes kr-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:#D6E4FF}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:30px;width:30px;margin-top:-11px;border-radius:99px;background:#fff;border:3px solid #0D47A1;box-shadow:0 3px 10px rgba(13,71,161,.35);cursor:grab}
+</style>
+</helmet>
+
+<div style="min-height:100%;padding:44px 48px 72px;box-sizing:border-box;background:#E8ECF3">
+
+  <div style="max-width:1280px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:24px;border-bottom:1px solid #D3DAE6;margin-bottom:32px">
+    <div style="display:flex;align-items:center;gap:18px">
+      <div style="width:64px;height:64px;border-radius:18px;background:#0D47A1;position:relative;overflow:hidden;box-shadow:0 10px 24px rgba(13,71,161,.30)">
+        <span style="position:absolute;left:16px;top:15px;width:6px;height:34px;border-radius:3px;background:#fff"></span>
+        <span style="position:absolute;left:24px;top:26px;width:26px;height:6px;border-radius:3px;background:#00B894;transform:rotate(-45deg);transform-origin:left center"></span>
+        <span style="position:absolute;left:24px;top:26px;width:26px;height:6px;border-radius:3px;background:#fff;transform:rotate(45deg);transform-origin:left center"></span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <span style="font:800 32px/1 'Inter',sans-serif;color:#0D47A1;letter-spacing:-1.7px">Kredius</span>
+        <span style="font:600 10.5px/1 'Inter',sans-serif;letter-spacing:.14em;color:#44474E">CRÉDITO CLARO, APROBADO EN MINUTOS</span>
+      </div>
+    </div>
+    <div style="max-width:450px;display:flex;flex-direction:column;gap:8px">
+      <span style="font:600 10.5px/1 'Inter',sans-serif;letter-spacing:.14em;color:#0D47A1">JOURNEY COMPLETO · APP MÓVIL · 402×874</span>
+      <span style="font:400 13.5px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Sobre los tokens reales de tu app: azul #0D47A1, teal de confirmación, Inter, radios de 12 px y botones de 52 px. El isotipo K sube en diagonal — el brazo verde es el crecimiento.</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:44px;align-items:flex-start;flex-wrap:wrap">
+
+    <sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+      <div style="width:256px;background:#fff;border-radius:20px;padding:16px 12px;box-shadow:0 3px 10px rgba(26,28,30,.06)">
+        <div style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.14em;color:#9E9E9E;padding:8px 10px 12px">PANTALLAS</div>
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="13">
+          <div onClick="{{ s.go }}" style="{{ s.style }}">
+            <span style="{{ s.numStyle }}">{{ s.num }}</span>
+            <span style="font:600 12.5px/1.3 'Inter',sans-serif;flex:1">{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+
+      <sc-if value="{{ showBrand }}" hint-placeholder-val="{{ true }}">
+        <div style="{{ brandBarStyle }}">
+          <div style="{{ brandLeftStyle }}">
+            <div onClick="{{ goPerfil }}" style="{{ brandAvatarStyle }}">{{ userInitials }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex:none">
+            <div style="{{ brandMarkStyle }}">
+              <span style="{{ brandStemStyle }}"></span>
+              <span style="{{ brandUpStyle }}"></span>
+              <span style="{{ brandDownStyle }}"></span>
+            </div>
+            <span style="{{ brandTextStyle }}">Kredius</span>
+          </div>
+          <div style="{{ brandActionsStyle }}">
+            <div onClick="{{ goNotif }}" style="{{ brandBellStyle }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7"></path><path d="M10.5 20a2 2 0 0 0 3 0"></path></svg>
+              <span style="{{ brandDotStyle }}"></span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 0b · LOGIN -->
+      <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#0D47A1;padding:92px 26px 44px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:hidden">
+          <div style="position:absolute;top:-130px;right:-130px;width:360px;height:360px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.30),rgba(0,184,148,0) 70%)"></div>
+          <div style="position:absolute;bottom:-120px;left:-120px;width:320px;height:320px;border-radius:99px;background:radial-gradient(circle,rgba(214,228,255,.26),rgba(214,228,255,0) 70%)"></div>
+
+          <div style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:46px;height:46px;border-radius:13px;background:#fff;position:relative;overflow:hidden;flex:none">
+                <span style="position:absolute;left:12px;top:11px;width:5px;height:24px;border-radius:2.5px;background:#0D47A1"></span>
+                <span style="position:absolute;left:18px;top:19px;width:19px;height:5px;border-radius:2.5px;background:#00B894;transform:rotate(-45deg);transform-origin:left center"></span>
+                <span style="position:absolute;left:18px;top:19px;width:19px;height:5px;border-radius:2.5px;background:#0D47A1;transform:rotate(45deg);transform-origin:left center"></span>
+              </div>
+              <span style="font:800 22px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1.1px">Kredius</span>
+            </div>
+            <div onClick="{{ closeLogin }}" style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </div>
+          </div>
+
+          <div style="position:relative;margin-top:auto;display:flex;flex-direction:column;gap:14px">
+            <h1 style="margin:0;font:800 42px/1.05 'Inter',sans-serif;color:#fff;letter-spacing:-2px;text-wrap:pretty">Qué gusto verte otra vez.</h1>
+            <p style="margin:0;font:400 15.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.72);max-width:305px;text-wrap:pretty">Entra con el celular que registraste y sigue justo donde te quedaste.</p>
+          </div>
+
+          <div style="position:relative;margin-top:28px;display:flex;flex-direction:column;gap:12px">
+            <label style="display:flex;flex-direction:column;gap:8px">
+              <span style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.6)">CELULAR O CORREO</span>
+              <input value="{{ loginUser }}" onChange="{{ onLoginUser }}" placeholder="55 1234 5678" style="{{ loginInputStyle }}">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:8px">
+              <span style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.6)">CONTRASEÑA</span>
+              <div style="position:relative;display:flex;align-items:center">
+                <input type="{{ pwdType }}" value="{{ loginPwd }}" onChange="{{ onLoginPwd }}" placeholder="••••••••" style="{{ loginInputStyle }}">
+                <span onClick="{{ togglePwd }}" style="position:absolute;right:14px;font:600 11.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.7);cursor:pointer">{{ pwdLabel }}</span>
+              </div>
+            </label>
+            <div style="display:flex;justify-content:flex-end;font:500 12.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.72);cursor:pointer">Olvidé mi contraseña</div>
+          </div>
+
+          <div style="position:relative;margin-top:22px;display:flex;gap:10px">
+            <div onClick="{{ doLogin }}" style="flex:1;height:52px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer" style-hover="background:#D6E4FF">Entrar</div>
+            <div onClick="{{ doLogin }}" style="width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer" title="Entrar con Face ID">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path><path d="M9 10v1M15 10v1M9.5 15c1.6 1.1 3.4 1.1 5 0"></path></svg>
+            </div>
+          </div>
+
+          <div style="position:relative;margin-top:20px;display:flex;align-items:center;gap:12px">
+            <span style="flex:1;height:1px;background:rgba(255,255,255,.18)"></span>
+            <span style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.5)">O ENTRA CON</span>
+            <span style="flex:1;height:1px;background:rgba(255,255,255,.18)"></span>
+          </div>
+
+          <div style="position:relative;margin-top:16px;display:flex;gap:10px">
+            <sc-for list="{{ loginProviders }}" as="lp" hint-placeholder-count="2">
+              <div style="flex:1;height:48px;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer">
+                <span style="width:18px;height:18px;border-radius:5px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.42) 0 3px,rgba(255,255,255,.16) 3px 6px)"></span>
+                <span style="font:600 13px/1 'Inter',sans-serif;color:#fff">{{ lp.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div onClick="{{ closeLogin }}" style="position:relative;margin-top:auto;padding-top:22px;text-align:center;font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.62);cursor:pointer">¿Aún no tienes cuenta? <span style="color:#fff;font-weight:700">Créala en 3 minutos</span></div>
+        </div>
+      </sc-if>
+
+      <!-- 0 · BIENVENIDA -->
+      <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+        <div style="height:874px;background:#0D47A1;padding:92px 26px 44px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:hidden">
+          <div style="position:absolute;top:-130px;right:-130px;width:360px;height:360px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.30),rgba(0,184,148,0) 70%)"></div>
+          <div style="position:absolute;bottom:-120px;left:-120px;width:320px;height:320px;border-radius:99px;background:radial-gradient(circle,rgba(214,228,255,.26),rgba(214,228,255,0) 70%)"></div>
+          <div style="position:relative;display:flex;align-items:center;gap:12px">
+            <div style="width:46px;height:46px;border-radius:13px;background:#fff;position:relative;overflow:hidden;flex:none">
+              <span style="position:absolute;left:12px;top:11px;width:5px;height:24px;border-radius:2.5px;background:#0D47A1"></span>
+              <span style="position:absolute;left:18px;top:19px;width:19px;height:5px;border-radius:2.5px;background:#00B894;transform:rotate(-45deg);transform-origin:left center"></span>
+              <span style="position:absolute;left:18px;top:19px;width:19px;height:5px;border-radius:2.5px;background:#0D47A1;transform:rotate(45deg);transform-origin:left center"></span>
+            </div>
+            <span style="font:800 22px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1.1px">Kredius</span>
+          </div>
+          <div style="position:relative;margin-top:auto;display:flex;flex-direction:column;gap:16px">
+            <h1 style="margin:0;font:800 42px/1.05 'Inter',sans-serif;color:#fff;letter-spacing:-2px;text-wrap:pretty">El dinero que necesitas, hoy.</h1>
+            <p style="margin:0;font:400 15.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.72);max-width:305px;text-wrap:pretty">Revisamos tu historial en buró y círculo de crédito y en minutos te decimos cuánto tienes autorizado. Sin filas y sin papeles.</p>
+          </div>
+          <div style="position:relative;display:flex;gap:10px;margin-top:30px">
+            <sc-for list="{{ heroStats }}" as="h" hint-placeholder-count="3">
+              <div style="flex:1;padding:14px 14px 16px;border-radius:16px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16)">
+                <div style="font:700 20px/1 'Inter',sans-serif;color:#fff;letter-spacing:-.6px">{{ h.value }}</div>
+                <div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.6);margin-top:8px">{{ h.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position:relative;margin-top:26px;display:flex;flex-direction:column;gap:14px">
+            <div onClick="{{ next }}" style="height:52px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer" style-hover="background:#D6E4FF">Empezar solicitud</div>
+            <div onClick="{{ openLogin }}" style="text-align:center;font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.62);cursor:pointer">Ya tengo cuenta · <span style="color:#fff;font-weight:700">Entrar</span></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 1 · CELULAR -->
+      <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <div style="flex:1;height:6px;border-radius:99px;background:#E0E0E0;overflow:hidden"><div style="height:100%;width:20%;border-radius:99px;background:#0D47A1"></div></div>
+            <span style="font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">1/5</span>
+          </div>
+          <h2 style="margin:24px 0 6px;font:700 27px/1.15 'Inter',sans-serif;letter-spacing:-1.1px">¿A qué celular te mandamos el código?</h2>
+          <p style="margin:0 0 22px;font:400 14px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Con este número firmas tu contrato y recibes los avisos de tu crédito. Debe estar a tu nombre.</p>
+
+          <div style="background:#fff;border:1px solid #E0E0E0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+            <label style="display:flex;flex-direction:column;gap:8px">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">NÚMERO CELULAR</span>
+              <div style="display:flex;gap:9px">
+                <div style="width:76px;height:52px;border-radius:12px;border:1px solid #E0E0E0;background:#F6F8FC;display:flex;align-items:center;justify-content:center;gap:7px;flex:none">
+                  <span style="font:600 15px/1 'Inter',sans-serif">+52</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+                <input value="{{ phone }}" onChange="{{ onPhone }}" placeholder="55 1234 5678" style="{{ phoneInputStyle }}">
+              </div>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:8px">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CORREO ELECTRÓNICO</span>
+              <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="tunombre@correo.com" style="{{ phoneInputStyle }}">
+            </label>
+          </div>
+
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ phoneNotes }}" as="pn" hint-placeholder-count="2">
+              <div style="display:flex;gap:11px;align-items:flex-start">
+                <span style="width:18px;height:18px;border-radius:99px;background:#B2DFDB;color:#00695C;flex:none;display:flex;align-items:center;justify-content:center;font:700 10px/1 'Inter',sans-serif">✓</span>
+                <span style="font:400 12.5px/1.45 'Inter',sans-serif;color:#44474E;text-wrap:pretty">{{ pn.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div onClick="{{ toPrivacy }}" style="{{ phoneCtaStyle }}">Continuar</div>
+        </div>
+      </sc-if>
+
+      <!-- 3 · OTP DE VERIFICACIÓN -->
+      <sc-if value="{{ isVerify }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <div style="flex:1;height:6px;border-radius:99px;background:#E0E0E0;overflow:hidden"><div style="height:100%;width:60%;border-radius:99px;background:#0D47A1"></div></div>
+            <span style="font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">3/5</span>
+          </div>
+
+          <div style="width:52px;height:52px;border-radius:15px;background:#D6E4FF;color:#0D47A1;display:flex;align-items:center;justify-content:center;margin-top:24px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 3h9a1.5 1.5 0 0 1 1.5 1.5v15A1.5 1.5 0 0 1 16.5 21h-9A1.5 1.5 0 0 1 6 19.5v-15A1.5 1.5 0 0 1 7.5 3zM10.5 18h3"></path></svg>
+          </div>
+          <h2 style="margin:18px 0 6px;font:700 27px/1.15 'Inter',sans-serif;letter-spacing:-1.1px">Escribe el código que te mandamos</h2>
+          <p style="margin:0 0 22px;font:400 14px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Enviamos un SMS de 6 dígitos al <b>{{ phoneMasked }}</b>. Con esto queda firmada tu autorización.</p>
+
+          <div style="display:flex;gap:9px">
+            <sc-for list="{{ verifyCells }}" as="vc" hint-placeholder-count="6">
+              <div style="{{ vc.style }}">{{ vc.char }}</div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <span style="font:400 12.5px/1.4 'Inter',sans-serif;color:#9E9E9E">Reenviar en 0:47</span>
+            <span onClick="{{ clearVerify }}" style="font:600 12.5px/1.4 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Borrar</span>
+          </div>
+
+          <div style="margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+            <sc-for list="{{ verifyKeys }}" as="vk" hint-placeholder-count="12">
+              <div onClick="{{ vk.press }}" style="{{ vk.style }}">{{ vk.label }}</div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:auto;padding-top:18px;display:flex;gap:11px;align-items:flex-start;background:#D6E4FF;border-radius:12px;padding:14px 16px">
+            <span style="width:20px;height:20px;border-radius:99px;background:#0D47A1;color:#fff;flex:none;display:flex;align-items:center;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            </span>
+            <span style="font:500 12.5px/1.45 'Inter',sans-serif;color:#001A42;text-wrap:pretty">Guardamos la fecha, hora e IP de tu autorización como constancia, según lo exige la ley.</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 4 · DATOS -->
+      <sc-if value="{{ isDatos }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <div style="flex:1;height:6px;border-radius:99px;background:#E0E0E0;overflow:hidden"><div style="height:100%;width:100%;border-radius:99px;background:#0D47A1"></div></div>
+            <span style="font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">5/5</span>
+          </div>
+          <h2 style="margin:24px 0 6px;font:700 27px/1.15 'Inter',sans-serif;letter-spacing:-1.1px">{{ dataTitle }}</h2>
+          <p style="margin:0 0 16px;font:400 14px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">{{ dataSubtitle }}</p>
+
+          <div style="display:flex;gap:6px;background:#E3E9F2;border-radius:12px;padding:4px;margin-bottom:18px">
+            <sc-for list="{{ dataTabs }}" as="dt" hint-placeholder-count="2">
+              <div onClick="{{ dt.go }}" style="{{ dt.style }}">{{ dt.label }}</div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ dataStepForm }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <sc-for list="{{ formGroups }}" as="g" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">{{ g.title }}</span>
+                    <span style="{{ g.chipStyle }}">{{ g.source }}</span>
+                  </div>
+                  <sc-for list="{{ g.rows }}" as="f" hint-placeholder-count="3">
+                    <label style="display:flex;flex-direction:column;gap:7px">
+                      <span style="font:500 11.5px/1 'Inter',sans-serif;color:#44474E">{{ f.label }}</span>
+                      <input value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.placeholder }}" style="{{ f.inputStyle }}">
+                    </label>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ dataStepDocs }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ documents }}" as="d" hint-placeholder-count="4">
+                <div onClick="{{ d.capture }}" style="{{ d.cardStyle }}">
+                  <div style="{{ d.iconStyle }}">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.6-2h6.8L17 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><circle cx="12" cy="12.5" r="3.2"></circle></svg>
+                  </div>
+                  <div style="flex:1">
+                    <div style="font:600 14px/1.2 'Inter',sans-serif">{{ d.name }}</div>
+                    <div style="font:400 11.5px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ d.hint }}</div>
+                  </div>
+                  <span style="{{ d.chipStyle }}">{{ d.state }}</span>
+                </div>
+              </sc-for>
+              <div style="background:#fff;border:1px solid #E0E0E0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">LECTURA AUTOMÁTICA (OCR)</span>
+                  <span style="padding:4px 8px;border-radius:99px;font:600 9px/1 'Inter',sans-serif;letter-spacing:.08em;color:#00695C;background:#B2DFDB">LISTO PARA LEER</span>
+                </div>
+                <div style="font:400 12.5px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">De tu INE sacamos nombre, CURP, fecha de nacimiento y domicilio; del comprobante, tu dirección actual. No escribes nada: solo revisas en el siguiente paso.</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="margin-top:18px;background:#D6E4FF;border-radius:12px;padding:14px 16px;display:flex;gap:11px;align-items:flex-start">
+            <span style="width:20px;height:20px;border-radius:99px;background:#0D47A1;color:#fff;flex:none;display:flex;align-items:center;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            </span>
+            <span style="font:500 12.5px/1.45 'Inter',sans-serif;color:#001A42;text-wrap:pretty">Tus datos viajan cifrados y solo se usan para evaluar esta solicitud.</span>
+          </div>
+          <div onClick="{{ nextData }}" style="{{ ctaOn }}">{{ dataCtaLabel }}</div>
+        </div>
+      </sc-if>
+
+      <!-- 2 · PRIVACIDAD Y AUTORIZACIÓN -->
+      <sc-if value="{{ isConsent }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <div style="flex:1;height:6px;border-radius:99px;background:#E0E0E0;overflow:hidden"><div style="height:100%;width:40%;border-radius:99px;background:#0D47A1"></div></div>
+            <span style="font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">2/5</span>
+          </div>
+          <h2 style="margin:24px 0 6px;font:700 27px/1.15 'Inter',sans-serif;letter-spacing:-1.1px">Tu privacidad y tu autorización</h2>
+          <p style="margin:0 0 18px;font:400 14px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Necesitamos dos permisos por separado. Puedes leer cada documento completo antes de aceptar.</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ legalDocs }}" as="ld" hint-placeholder-count="2">
+              <div style="background:#fff;border:1px solid #E0E0E0;border-radius:16px;padding:15px;display:flex;align-items:center;gap:13px;cursor:pointer">
+                <div style="width:38px;height:38px;border-radius:11px;background:#D6E4FF;color:#0D47A1;flex:none;display:flex;align-items:center;justify-content:center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 14px/1.2 'Inter',sans-serif">{{ ld.name }}</div>
+                  <div style="font:400 11.5px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ ld.meta }}</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:16px;background:#fff;border:1px solid #E0E0E0;border-radius:16px;padding:15px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">SE CONSULTAN</span>
+            <div style="display:flex;flex-direction:column;gap:11px;margin-top:13px">
+              <sc-for list="{{ bureaus }}" as="b" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="{{ b.iconStyle }}">{{ b.code }}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 13.5px/1.2 'Inter',sans-serif">{{ b.name }}</div>
+                    <div style="font:400 11.5px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:4px">{{ b.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ consents }}" as="cs" hint-placeholder-count="3">
+              <div onClick="{{ cs.toggle }}" style="{{ cs.boxStyle }}">
+                <span style="{{ cs.tickStyle }}">✓</span>
+                <span style="flex:1;font:500 12px/1.5 'Inter',sans-serif;text-wrap:pretty">{{ cs.text }}</span>
+                <span style="{{ cs.tagStyle }}">{{ cs.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div onClick="{{ toVerify }}" style="{{ consentCtaStyle }}">Autorizar y verificar mi celular</div>
+          <div style="margin-top:12px;text-align:center;font:400 11px/1.5 'Inter',sans-serif;color:#9E9E9E;text-wrap:pretty">Al continuar te enviamos un código SMS. Tu autorización queda firmada con ese código.</div>
+        </div>
+      </sc-if>
+
+      <!-- 3 · ANÁLISIS -->
+      <sc-if value="{{ isAnalyzing }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#0D47A1;padding:92px 26px 44px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:24px;margin-top:34px">
+            <div style="width:112px;height:112px;border-radius:99px;border:3px solid rgba(255,255,255,.16);border-top-color:#00B894;animation:kr-spin 1.1s linear infinite"></div>
+            <div style="text-align:center;display:flex;flex-direction:column;gap:9px">
+              <h2 style="margin:0;font:700 25px/1.2 'Inter',sans-serif;color:#fff;letter-spacing:-.9px">Analizando tu perfil</h2>
+              <p style="margin:0;font:400 14px/1.5 'Inter',sans-serif;color:rgba(255,255,255,.62)">Toma unos segundos. No cierres la app.</p>
+            </div>
+          </div>
+          <div style="margin-top:48px;display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ analysisSteps }}" as="a" hint-placeholder-count="4">
+              <div style="{{ a.style }}">
+                <span style="{{ a.dotStyle }}">{{ a.mark }}</span>
+                <span style="{{ a.textStyle }}">{{ a.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:auto;text-align:center;font:600 10px/1.5 'Inter',sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.4)">CONEXIÓN SEGURA · CIFRADO EXTREMO A EXTREMO</div>
+        </div>
+      </sc-if>
+
+      <!-- 4 · APROBADO -->
+      <sc-if value="{{ isApproved }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="background:#0D47A1;padding:112px 24px 30px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;padding:7px 13px;border-radius:99px;background:rgba(0,184,148,.18);border:1px solid rgba(0,184,148,.4)">
+              <span style="width:7px;height:7px;border-radius:99px;background:#00B894;animation:kr-pulse 1.6s ease-in-out infinite"></span>
+              <span style="font:600 10.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:#7FE8CE">SÍ CUMPLES LOS CRITERIOS</span>
+            </div>
+            <div>
+              <div style="font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.6);margin-bottom:11px">Tienes autorizado hasta</div>
+              <div style="font:800 46px/1 'Inter',sans-serif;color:#fff;letter-spacing:-2.4px">{{ maxLabel }}</div>
+            </div>
+            <div style="display:flex;gap:20px;padding-top:4px">
+              <div><div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.5)">PERFIL</div><div style="font:600 15px/1 'Inter',sans-serif;color:#fff;margin-top:8px">Bueno · A2</div></div>
+              <div style="width:1px;background:rgba(255,255,255,.18)"></div>
+              <div><div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.5)">CAPACIDAD / MES</div><div style="font:600 15px/1 'Inter',sans-serif;color:#fff;margin-top:8px">$4,200</div></div>
+            </div>
+          </div>
+          <div style="padding:24px 22px 32px;display:flex;flex-direction:column;flex:1">
+            <h3 style="margin:0 0 4px;font:700 19px/1.2 'Inter',sans-serif;letter-spacing:-.6px">Esto fue lo que revisamos</h3>
+            <p style="margin:0 0 16px;font:400 13.5px/1.5 'Inter',sans-serif;color:#44474E">En buró y círculo de crédito.</p>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ criteria }}" as="c" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #E0E0E0;border-radius:12px;padding:12px 15px;display:flex;align-items:center;gap:12px">
+                  <span style="width:22px;height:22px;border-radius:99px;background:#00695C;color:#fff;font:700 12px/22px 'Inter',sans-serif;text-align:center;flex:none">✓</span>
+                  <span style="flex:1;font:600 13.5px/1.3 'Inter',sans-serif">{{ c.label }}</span>
+                  <span style="font:500 12.5px/1 'Inter',sans-serif;color:#9E9E9E">{{ c.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ goHomeEmpty }}" style="{{ ctaOn }}">Ir a mi inicio</div>
+            <div style="margin-top:12px;text-align:center;font:400 12px/1.5 'Inter',sans-serif;color:#9E9E9E;text-wrap:pretty">Tus ofertas te esperan ahí. No caducan hoy.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 5 · PREOFERTAS -->
+      <sc-if value="{{ isOffers }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 20px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="font:600 15px/1 'Inter',sans-serif">Preofertas para ti</span>
+          </div>
+          <div style="{{ evalNoteStyle }}">
+            <span style="width:7px;height:7px;border-radius:99px;flex:none;margin-top:6px;background:#0D47A1"></span>
+            <span style="flex:1;font:500 12px/1.5 'Inter',sans-serif;color:#001A42;text-wrap:pretty">{{ evalNote }}</span>
+          </div>
+          <p style="margin:14px 0;font:400 13.5px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Desliza para ver los productos que tu perfil autoriza. Defines monto y plazo en el siguiente paso.</p>
+
+          <div style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px;padding:4px 20px 12px;scrollbar-width:none">
+            <sc-for list="{{ offers }}" as="o" hint-placeholder-count="6">
+              <div onClick="{{ o.select }}" style="{{ o.cardStyle }}">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                  <div style="{{ o.iconStyle }}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><path d="M2.5 10h19"></path></svg>
+                  </div>
+                  <span style="{{ o.segStyle }}">{{ o.segment }}</span>
+                </div>
+                <div style="margin-top:16px">
+                  <div style="font:700 17px/1.2 'Inter',sans-serif;letter-spacing:-.4px;text-wrap:pretty">{{ o.name }}</div>
+                  <div style="font:400 12.5px/1.45 'Inter',sans-serif;color:#7A8296;margin-top:7px;text-wrap:pretty">{{ o.desc }}</div>
+                </div>
+                <div style="margin-top:auto;padding-top:16px">
+                  <div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">LÍNEA AUTORIZADA</div>
+                  <div style="font:800 26px/1 'Inter',sans-serif;letter-spacing:-1.2px;margin-top:9px">{{ o.maxLabel }}</div>
+                  <div style="font:500 12px/1 'Inter',sans-serif;color:#44474E;margin-top:9px">{{ o.footNote }}</div>
+                </div>
+                <div style="{{ o.badgeStyle }}">{{ o.badge }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;gap:6px;justify-content:center;margin:2px 0 16px">
+            <sc-for list="{{ offerDots }}" as="od" hint-placeholder-count="6">
+              <span style="{{ od.style }}"></span>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CÓMO FUNCIONA {{ productShort }}</span>
+            <div style="font:400 13px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">{{ productUse }}</div>
+            <div style="display:flex;gap:1px;background:#EDEFF3;border-radius:12px;overflow:hidden">
+              <sc-for list="{{ productSpecs }}" as="ps" hint-placeholder-count="3">
+                <div style="flex:1;background:#fff;padding:12px 13px">
+                  <div style="font:400 10.5px/1 'Inter',sans-serif;color:#9E9E9E">{{ ps.label }}</div>
+                  <div style="font:700 13.5px/1 'Inter',sans-serif;margin-top:8px">{{ ps.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Continuar con {{ productShort }}</div>
+        </div>
+      </sc-if>
+
+      <!-- 6 · CÓMO SOLICITAR -->
+      <sc-if value="{{ isHow }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="font:600 15px/1 'Inter',sans-serif">{{ productName }}</span>
+          </div>
+          <div style="margin-top:20px;background:#0D47A1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+            <span style="align-self:flex-start;padding:6px 12px;border-radius:99px;background:rgba(0,184,148,.18);font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#7FE8CE">AUTORIZADO PARA TI</span>
+            <div><div style="font:500 12.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.6);margin-bottom:10px">Línea disponible</div><div style="font:800 38px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1.9px">{{ productMaxLabel }}</div></div>
+            <div style="font:400 12.5px/1.5 'Inter',sans-serif;color:rgba(255,255,255,.6);text-wrap:pretty">{{ productUse }}</div>
+          </div>
+          <h3 style="margin:26px 0 4px;font:700 19px/1.2 'Inter',sans-serif;letter-spacing:-.6px">Así lo solicitas</h3>
+          <p style="margin:0 0 16px;font:400 13.5px/1.5 'Inter',sans-serif;color:#44474E">Tres pasos, todo desde tu celular.</p>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <sc-for list="{{ howSteps }}" as="h" hint-placeholder-count="3">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding-bottom:18px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:none">
+                  <span style="width:30px;height:30px;border-radius:99px;background:#D6E4FF;color:#0D47A1;font:700 13px/30px 'Inter',sans-serif;text-align:center">{{ h.num }}</span>
+                  <span style="{{ h.lineStyle }}"></span>
+                </div>
+                <div style="padding-top:4px"><div style="font:700 14.5px/1.2 'Inter',sans-serif">{{ h.title }}</div><div style="font:400 12.5px/1.45 'Inter',sans-serif;color:#9E9E9E;margin-top:5px;text-wrap:pretty">{{ h.desc }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Aceptar y configurar</div>
+        </div>
+      </sc-if>
+
+      <!-- 7 · CONFIGURADOR -->
+      <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 20px 30px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="font:600 15px/1 'Inter',sans-serif">Arma tu préstamo</span>
+          </div>
+
+          <div style="margin-top:18px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:20px 18px 22px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CUÁNTO NECESITAS</span>
+              <span style="font:500 11.5px/1 'Inter',sans-serif;color:#9E9E9E">Autorizado {{ productMaxLabel }}</span>
+            </div>
+            <div style="font:800 42px/1 'Inter',sans-serif;letter-spacing:-2.2px">{{ amountLabel }}</div>
+            <input type="range" min="{{ minAmount }}" max="{{ maxAmount }}" step="500" value="{{ amount }}" onChange="{{ onAmount }}" style="width:100%;display:block;margin-top:4px">
+            <div style="display:flex;justify-content:space-between;font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">
+              <span>{{ minLabel }}</span><span>{{ productMaxLabel }}</span>
+            </div>
+          </div>
+
+          <div style="margin-top:11px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">EN CUÁNTAS MENSUALIDADES</span>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div onClick="{{ termDown }}" style="{{ termDownStyle }}">−</div>
+              <div style="flex:1;text-align:center">
+                <div style="font:800 34px/1 'Inter',sans-serif;letter-spacing:-1.5px">{{ term }}</div>
+                <div style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E;margin-top:8px">PAGOS MENSUALES</div>
+              </div>
+              <div onClick="{{ termUp }}" style="{{ termUpStyle }}">+</div>
+            </div>
+            <div style="display:flex;gap:6px;justify-content:center">
+              <sc-for list="{{ termDots }}" as="d" hint-placeholder-count="5">
+                <span style="{{ d.style }}"></span>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:11px;background:#0D47A1;border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div>
+                <div style="font:500 12.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.6);margin-bottom:11px">Pagas cada mes</div>
+                <div style="font:800 40px/1 'Inter',sans-serif;color:#fff;letter-spacing:-2px">{{ pagoLabel }}</div>
+              </div>
+              <div style="text-align:right;padding-bottom:5px">
+                <div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.5)">CADA</div>
+                <div style="font:600 13px/1 'Inter',sans-serif;color:#fff;margin-top:8px">día 5</div>
+              </div>
+            </div>
+            <div style="height:1px;background:rgba(255,255,255,.16)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.62)">Total a pagar</span>
+              <span style="font:700 17px/1 'Inter',sans-serif;color:#fff">{{ totalLabel }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:-6px">
+              <span style="font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.62)">Intereses incluidos</span>
+              <span style="font:600 15px/1 'Inter',sans-serif;color:#7FE8CE">{{ interesLabel }}</span>
+            </div>
+            <div style="font:400 11.5px/1.45 'Inter',sans-serif;color:rgba(255,255,255,.45);text-wrap:pretty">Tu primer pago sería el 5 de septiembre. Puedes adelantar pagos sin penalización.</div>
+          </div>
+
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Revisar solicitud</div>
+        </div>
+      </sc-if>
+
+      <!-- 8 · RESUMEN -->
+      <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 30px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="font:600 15px/1 'Inter',sans-serif">Revisa y confirma</span>
+          </div>
+          <div style="margin-top:20px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:4px 18px">
+            <sc-for list="{{ summaryRows }}" as="r" hint-placeholder-count="6">
+              <div style="{{ r.style }}">
+                <span style="font:400 13.5px/1.3 'Inter',sans-serif;color:#44474E">{{ r.label }}</span>
+                <span style="{{ r.valueStyle }}">{{ r.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:14px;background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:13px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">DÓNDE TE DEPOSITAMOS</span>
+            <div style="display:flex;gap:6px;background:#EBF0F7;border-radius:12px;padding:4px">
+              <sc-for list="{{ depositTabs }}" as="dp" hint-placeholder-count="2">
+                <div onClick="{{ dp.go }}" style="{{ dp.style }}">{{ dp.label }}</div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasAccount }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:42px;height:42px;border-radius:12px;background:#D6E4FF;color:#0D47A1;flex:none;display:flex;align-items:center;justify-content:center">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><path d="M2.5 10h19"></path></svg>
+                </div>
+                <div style="flex:1"><div style="font:700 15px/1.2 'Inter',sans-serif">•••• 4821 · BBVA</div><div style="font:400 11.5px/1.3 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">CLABE registrada y verificada a tu nombre</div></div>
+                <span style="padding:5px 9px;border-radius:99px;font:600 9px/1 'Inter',sans-serif;letter-spacing:.08em;color:#00695C;background:#B2DFDB;flex:none">VERIFICADA</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noAccount }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:13px">
+                <label style="display:flex;flex-direction:column;gap:7px">
+                  <span style="font:500 11.5px/1 'Inter',sans-serif;color:#44474E">CLABE interbancaria (18 dígitos)</span>
+                  <input value="{{ clabe }}" onChange="{{ onClabe }}" placeholder="012 180 00000000000 0" style="{{ clabeInputStyle }}">
+                </label>
+                <div style="font:400 11.5px/1.4 'Inter',sans-serif;color:{{ clabeHintColor }}">{{ clabeHint }}</div>
+                <div style="height:1px;background:#EDEFF3"></div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:42px;height:42px;border-radius:12px;background:#D6E4FF;color:#0D47A1;flex:none;display:flex;align-items:center;justify-content:center">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+                  </div>
+                  <div style="flex:1"><div style="font:700 14px/1.2 'Inter',sans-serif">Ábrete una cuenta Kredius</div><div style="font:400 11.5px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">Sin CLABE propia: te damos una en 2 minutos y depositamos ahí.</div></div>
+                </div>
+              </div>
+            </sc-if>
+            <div style="font:400 12px/1.45 'Inter',sans-serif;color:#44474E">Recibes el dinero en menos de 15 minutos después de firmar.</div>
+          </div>
+          <div onClick="{{ toggleTerms }}" style="{{ termsBoxStyle }}">
+            <span style="{{ termsTickStyle }}">✓</span>
+            <span style="font:500 12.5px/1.5 'Inter',sans-serif;text-wrap:pretty">Acepto el contrato de crédito y la tabla de amortización.</span>
+          </div>
+          <div onClick="{{ toSign }}" style="{{ summaryCtaStyle }}">Firmar solicitud</div>
+        </div>
+      </sc-if>
+
+      <!-- 9 · FIRMA OTP -->
+      <sc-if value="{{ isSign }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#EBF0F7;padding:96px 22px 30px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="font:600 15px/1 'Inter',sans-serif">Firma electrónica</span>
+          </div>
+          <h2 style="margin:24px 0 6px;font:700 27px/1.15 'Inter',sans-serif;letter-spacing:-1.1px">Tu código es tu firma</h2>
+          <p style="margin:0 0 24px;font:400 14px/1.5 'Inter',sans-serif;color:#44474E">Te mandamos 6 dígitos al <strong style="color:#1A1C1E">55 •• •• 42 18</strong>.</p>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ otpBoxes }}" as="b" hint-placeholder-count="6">
+              <div style="{{ b.style }}">{{ b.char }}</div>
+            </sc-for>
+          </div>
+          <div style="margin-top:16px;font:500 12.5px/1 'Inter',sans-serif;color:#9E9E9E">Reenviar código en 00:24</div>
+          <div style="margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <sc-for list="{{ keys }}" as="k" hint-placeholder-count="12">
+              <div onClick="{{ k.press }}" style="{{ k.style }}">{{ k.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 10 · DESEMBOLSO -->
+      <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#0D47A1;padding:92px 26px 44px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:hidden">
+          <div style="position:absolute;top:110px;left:50%;transform:translateX(-50%);width:340px;height:340px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.32),rgba(0,184,148,0) 70%)"></div>
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;margin-top:60px;animation:kr-rise .5s ease both">
+            <div style="width:94px;height:94px;border-radius:99px;background:#00B894;display:flex;align-items:center;justify-content:center;font:700 40px/1 'Inter',sans-serif;color:#fff">✓</div>
+            <div style="text-align:center;display:flex;flex-direction:column;gap:10px">
+              <h2 style="margin:0;font:800 29px/1.15 'Inter',sans-serif;color:#fff;letter-spacing:-1.3px">Listo, el dinero va en camino</h2>
+              <p style="margin:0;font:400 14.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.65);max-width:290px">Depositamos {{ amountLabel }} a tu cuenta BBVA •••• 4821 hoy mismo.</p>
+            </div>
+          </div>
+          <div style="position:relative;margin-top:36px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:13px">
+            <sc-for list="{{ doneRows }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font:500 13px/1 'Inter',sans-serif;color:rgba(255,255,255,.6)">{{ r.label }}</span>
+                <span style="font:700 14px/1 'Inter',sans-serif;color:#fff">{{ r.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div onClick="{{ next }}" style="position:relative;margin-top:auto;height:52px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Ir a mi crédito</div>
+        </div>
+      </sc-if>
+
+      <!-- 11 · HOME -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#EBF0F7;padding:96px 0 0;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px">
+            <div onClick="{{ goPerfil }}" style="cursor:pointer;flex:1;min-width:0;padding-right:12px">
+              <div style="font:500 12.5px/1 'Inter',sans-serif;color:#9E9E9E">Hola,</div>
+              <div style="font:800 21px/1.1 'Inter',sans-serif;letter-spacing:-.9px;margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ userShort }}</div>
+            </div>
+
+          </div>
+          <div style="flex:1;min-height:0;overflow:auto;padding:0 20px 18px">
+          <!-- RESUMEN -->
+          <sc-if value="{{ tabResumen }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+
+              <sc-if value="{{ isDistProfile }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:9px">
+                <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E;white-space:nowrap">Mi línea de distribuidor</span>
+                <div style="background:#0D47A1;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden">
+                  <div style="position:absolute;right:-70px;top:-70px;width:190px;height:190px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.32),rgba(0,184,148,0) 70%)"></div>
+                  <div style="position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                    <div>
+                      <div style="font:500 10.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.62);margin-bottom:8px">Colocado</div>
+                      <div style="font:800 24px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1.1px">$45,000</div>
+                    </div>
+                    <span style="{{ lineStatusStyle }}">{{ lineStatus }}</span>
+                  </div>
+                  <div style="position:relative;display:flex;flex-direction:column;gap:7px">
+                    <div style="height:6px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden"><div style="height:100%;width:18%;background:#00B894;border-radius:99px"></div></div>
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                      <span style="flex:none;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:600;line-height:1.3;letter-spacing:.07em;color:rgba(255,255,255,.55);white-space:nowrap">Disponible $205,000</span>
+                      <span style="flex:none;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:400;line-height:1.3;color:rgba(255,255,255,.45);white-space:nowrap">de $250,000</span>
+                    </div>
+                  </div>
+                  <div style="position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.14);border-radius:11px;overflow:hidden">
+                    <sc-for list="{{ distFacts }}" as="df" hint-placeholder-count="4">
+                      <div style="padding:9px 11px;background:rgba(255,255,255,.06)">
+                        <div style="font:400 9.5px/1.3 'Inter',sans-serif;color:rgba(255,255,255,.55)">{{ df.k }}</div>
+                        <div style="{{ df.valueStyle }}">{{ df.v }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div onClick="{{ goColoca }}" style="position:relative;height:40px;border-radius:11px;background:#fff;color:#0D47A1;display:flex;align-items:center;justify-content:center;gap:8px;font:700 13px/1 'Inter',sans-serif;cursor:pointer">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13"></path><path d="m12 6 6 6-6 6"></path></svg>
+                    Enviar préstamo
+                  </div>
+                </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ hNone }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+                  <div style="width:66px;height:66px;border-radius:20px;background:#EBF0F7;color:#0D47A1;display:flex;align-items:center;justify-content:center">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><path d="M2.5 10h19"></path><path d="M6 14.5h4"></path></svg>
+                  </div>
+                  <div>
+                    <div style="font:700 18px/1.25 'Inter',sans-serif;letter-spacing:-.6px">Todavía no tienes un crédito</div>
+                    <p style="margin:9px 0 0;font:400 13.5px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Ya pasaste la revisión, así que lo que sigue es escoger. Tómate tu tiempo: la oferta no se vence hoy.</p>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ hasOwn }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;margin-top:10px">
+                  <div style="display:block;width:100%;margin-bottom:14px;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;line-height:14px;letter-spacing:.12em;color:#9E9E9E;white-space:nowrap;overflow:visible">MIS CRÉDITOS</div>
+                  <div style="{{ ownRowStyle }}">
+                    <sc-for list="{{ activeCredits }}" as="ac" hint-placeholder-count="3">
+                      <div style="{{ ac.cardStyle }}">
+                        <div style="position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.30),rgba(0,184,148,0) 70%)"></div>
+                        <div style="position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                          <div>
+                            <div style="font:500 10.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.6);margin-bottom:8px">Saldo pendiente</div>
+                            <div style="font:800 22px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1px">{{ ac.balance }}</div>
+                          </div>
+                          <span style="{{ ac.chipStyle }}">{{ ac.status }}</span>
+                        </div>
+                        <div style="position:relative">
+                          <div style="font:700 14px/1.2 'Inter',sans-serif;color:#fff">{{ ac.name }}</div>
+                          <div style="font:400 11px/1.35 'Inter',sans-serif;color:rgba(255,255,255,.58);margin-top:6px">{{ ac.meta }}</div>
+                        </div>
+                        <div style="position:relative;height:6px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden"><div style="{{ ac.barStyle }}"></div></div>
+                        <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+                          <span style="flex:none;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:600;line-height:1.4;letter-spacing:.08em;color:rgba(255,255,255,.55);white-space:nowrap">{{ ac.progress }}</span>
+                          <div style="text-align:right"><div style="font-family:'Inter',sans-serif;font-size:10px;font-weight:400;line-height:1.4;color:rgba(255,255,255,.55);margin-bottom:6px;white-space:nowrap">{{ ac.nextLabel }}</div><div style="font:700 13px/1 'Inter',sans-serif;color:#7FE8CE">{{ ac.next }}</div></div>
+                        </div>
+                        <div onClick="{{ ac.go }}" style="position:relative;height:37px;border-radius:10px;background:#fff;color:#0D47A1;display:flex;align-items:center;justify-content:center;font:700 12.5px/1 'Inter',sans-serif;cursor:pointer">{{ ac.cta }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:5px;justify-content:center">
+                    <sc-for list="{{ activeDots }}" as="ad" hint-placeholder-count="3">
+                      <span style="{{ ad.style }}"></span>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="background:#0D47A1;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden">
+                <div style="position:absolute;right:-70px;top:-70px;width:200px;height:200px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.35),rgba(0,184,148,0) 70%)"></div>
+                <div style="position:relative;display:flex;align-items:flex-start;gap:13px">
+                  <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.14);color:#7FE8CE;flex:none;display:flex;align-items:center;justify-content:center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.6 9l6 .9-4.3 4.2 1 6-5.3-2.8-5.3 2.8 1-6L3.4 9.9 9.4 9z"></path></svg>
+                  </div>
+                  <div style="flex:1">
+                    <div style="font:700 17px/1.25 'Inter',sans-serif;color:#fff;letter-spacing:-.6px;text-wrap:pretty">{{ offersTitle }}</div>
+                    <p style="margin:8px 0 0;font:400 13px/1.5 'Inter',sans-serif;color:rgba(255,255,255,.72);text-wrap:pretty">{{ offersCopy }}</p>
+                  </div>
+                </div>
+                <div onClick="{{ goOffers }}" style="position:relative;height:46px;border-radius:12px;background:#fff;color:#0D47A1;display:flex;align-items:center;justify-content:center;gap:8px;font:700 14px/1 'Inter',sans-serif;cursor:pointer">
+                  Ver mis oportunidades
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- COLOCACIONES -->
+          <sc-if value="{{ tabColoca }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+              <div onClick="{{ goColoca }}" style="height:48px;border-radius:13px;background:#0D47A1;color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;font:700 14px/1 'Inter',sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(13,71,161,.22)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13"></path><path d="m12 6 6 6-6 6"></path></svg>
+                Enviar préstamo
+              </div>
+              <div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px">
+                <sc-for list="{{ colFilters }}" as="cf" hint-placeholder-count="4">
+                  <span onClick="{{ cf.go }}" style="{{ cf.style }}">{{ cf.label }}</span>
+                </sc-for>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:2px 14px">
+                <sc-for list="{{ placements }}" as="pl" hint-placeholder-count="5">
+                  <div onClick="{{ pl.open }}" style="{{ pl.rowStyle }}">
+                    <div style="{{ pl.avatarStyle }}">{{ pl.initials }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <span style="font:600 13.5px/1.2 'Inter',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ pl.name }}</span>
+                        <span style="{{ pl.chipStyle }}">{{ pl.state }}</span>
+                      </div>
+                      <div style="font:400 11px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ pl.meta }}</div>
+                    </div>
+                    <div style="text-align:right;flex:none">
+                      <div style="font:700 13.5px/1 'Inter',sans-serif">{{ pl.amount }}</div>
+                      <div style="{{ pl.feeStyle }}">{{ pl.fee }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font:400 11.5px/1.5 'Inter',sans-serif;color:#9E9E9E;padding:0 4px;text-wrap:pretty">Estas son tus colocaciones vivas. Toca una para ver su expediente: sus pagos, su bonificación y su gestión de cobro.</div>
+            </div>
+          </sc-if>
+
+          <!-- MI LÍNEA -->
+          <sc-if value="{{ tabLinea }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;margin-top:18px">
+              <div style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px">
+                <sc-for list="{{ accounts }}" as="ac" hint-placeholder-count="2">
+                  <span onClick="{{ ac.pick }}" style="{{ ac.style }}">{{ ac.label }}</span>
+                </sc-for>
+              </div>
+              <sc-for list="{{ movGroups }}" as="mg" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between">
+                    <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">{{ mg.day }}</span>
+                    <span style="font:500 11px/1 'Inter',sans-serif;color:#9E9E9E">{{ mg.total }}</span>
+                  </div>
+                  <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:2px 16px">
+                    <sc-for list="{{ mg.rows }}" as="m" hint-placeholder-count="3">
+                      <div style="{{ m.rowStyle }}">
+                        <div style="{{ m.iconStyle }}">{{ m.initial }}</div>
+                        <div style="flex:1;min-width:0">
+                          <div style="font:600 13.5px/1.2 'Inter',sans-serif">{{ m.title }}</div>
+                          <div style="font:400 11.5px/1.3 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ m.meta }}</div>
+                        </div>
+                        <div style="text-align:right;flex:none">
+                          <span style="{{ m.amountStyle }}">{{ m.amount }}</span>
+                          <div style="font:400 10.5px/1 'Inter',sans-serif;color:#9E9E9E;margin-top:6px">{{ m.time }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- BENEFICIARIOS -->
+          <sc-if value="{{ tabBene }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                <div>
+                  <div style="font:700 17px/1.2 'Inter',sans-serif;letter-spacing:-.6px">Mis beneficiarios</div>
+                  <div style="font:400 11.5px/1.4 'Inter',sans-serif;color:#9E9E9E;margin-top:6px">Las personas a las que le has prestado</div>
+                </div>
+                <span style="font:600 12px/1 'Inter',sans-serif;color:#0D47A1">{{ beneCount }}</span>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:9px;height:46px;padding:0 14px;border-radius:13px;background:#fff;border:1px solid #E0E0E0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+                <input value="{{ beneQuery }}" onChange="{{ onBeneQuery }}" placeholder="Busca por nombre o celular" style="flex:1;min-width:0;border:0;background:transparent;outline:none;font:500 13.5px/1 'Inter',sans-serif;color:#0F1A2E">
+                <sc-if value="{{ beneHasQuery }}" hint-placeholder-val="{{ false }}">
+                  <span onClick="{{ clearBeneQuery }}" style="font:600 12px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer;flex:none">Limpiar</span>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:2px 16px">
+                <sc-for list="{{ beneList }}" as="b" hint-placeholder-count="5">
+                  <div onClick="{{ b.open }}" style="{{ b.rowStyle }}">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="{{ b.avatarStyle }}">{{ b.initials }}</div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font:600 14px/1.2 'Inter',sans-serif">{{ b.name }}</div>
+                        <div style="font:400 11.5px/1.35 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ b.meta }}</div>
+                      </div>
+                      <span style="{{ b.chipStyle }}">{{ b.state }}</span>
+                    </div>
+                    <sc-if value="{{ b.expanded }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:12px;padding:14px 0 4px">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#EDEFF3;border-radius:12px;overflow:hidden">
+                          <sc-for list="{{ b.facts }}" as="bf2" hint-placeholder-count="4">
+                            <div style="background:#fff;padding:11px 12px">
+                              <div style="font:400 10.5px/1 'Inter',sans-serif;color:#9E9E9E">{{ bf2.k }}</div>
+                              <div style="{{ bf2.valueStyle }}">{{ bf2.v }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                          <div style="flex:1;height:40px;border-radius:11px;background:#EBF0F7;display:flex;align-items:center;justify-content:center;gap:7px;font:600 12.5px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+                            Su contrato
+                          </div>
+                          <div style="flex:1;height:40px;border-radius:11px;background:#EBF0F7;display:flex;align-items:center;justify-content:center;gap:7px;font:600 12.5px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h10"></path></svg>
+                            Sus pagos
+                          </div>
+                        </div>
+                        <div onClick="{{ goColoca }}" style="height:40px;border-radius:11px;background:#0D47A1;color:#fff;display:flex;align-items:center;justify-content:center;font:600 12.5px/1 'Inter',sans-serif;cursor:pointer">Enviarle otro préstamo</div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="font:400 11.5px/1.5 'Inter',sans-serif;color:#9E9E9E;padding:0 4px;text-wrap:pretty">Aquí vive la ficha de cada persona: su contrato, su tabla de pagos y su historial contigo. Las colocaciones vivas se gestionan en la pestaña de Colocaciones.</div>
+            </div>
+          </sc-if>
+
+          <!-- PERFIL Y CONTRATOS -->
+          <sc-if value="{{ tabPerfil }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;margin-top:18px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div onClick="{{ goTab0 }}" style="{{ backBtn }}">←</div>
+                <span style="font:700 16px/1 'Inter',sans-serif">Mi perfil</span>
+              </div>
+              <sc-for list="{{ fieldGroups }}" as="g" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">{{ g.title }}</span>
+                    <span style="{{ g.chipStyle }}">{{ g.source }}</span>
+                  </div>
+                  <div style="background:#fff;border:1px solid #E0E0E0;border-radius:14px;padding:2px 16px">
+                    <sc-for list="{{ g.rows }}" as="f" hint-placeholder-count="3">
+                      <div style="{{ f.rowStyle }}">
+                        <span style="font:400 12.5px/1.3 'Inter',sans-serif;color:#9E9E9E;flex:none;width:118px">{{ f.label }}</span>
+                        <span style="font:600 13.5px/1.35 'Inter',sans-serif;flex:1;text-align:right;text-wrap:pretty">{{ f.value }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CONTRATOS VIGENTES</span>
+                <sc-for list="{{ contracts }}" as="ct" hint-placeholder-count="4">
+                  <div style="background:#fff;border:1px solid #E0E0E0;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+                    <div style="width:38px;height:38px;border-radius:10px;background:#EBF0F7;color:#0D47A1;font:700 10px/38px 'Inter',sans-serif;text-align:center;flex:none">PDF</div>
+                    <div style="flex:1"><div style="font:600 13.5px/1.2 'Inter',sans-serif">{{ ct.name }}</div><div style="font:400 11.5px/1.3 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ ct.meta }}</div></div>
+                    <span style="{{ ct.chipStyle }}">{{ ct.status }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="margin-top:auto;background:#fff;border-top:1px solid #DDE3EC;padding:10px 12px 26px;display:flex;gap:4px">
+          <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
+            <div onClick="{{ tb.go }}" style="{{ tb.style }}">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ tb.icon }}"></path></svg>
+              <span style="font:600 10.5px/1 'Inter',sans-serif">{{ tb.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+      </sc-if>
+
+      <!-- 17 · TIPO DE PERFIL -->
+      <sc-if value="{{ isProfileType }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <div style="flex:1;height:6px;border-radius:99px;background:#E0E0E0;overflow:hidden"><div style="height:100%;width:70%;border-radius:99px;background:#0D47A1"></div></div>
+            <span style="font:600 11px/1 'Inter',sans-serif;color:#9E9E9E">4/5</span>
+          </div>
+          <h2 style="margin:26px 0 0;font:800 26px/1.18 'Inter',sans-serif;letter-spacing:-1.2px;text-wrap:pretty">¿Cómo vas a usar tu crédito?</h2>
+          <p style="margin:11px 0 0;font:400 14px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Esto define qué productos te mostramos y qué papeles vas a firmar. Puedes cambiarlo después.</p>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
+            <sc-for list="{{ profileOptions }}" as="po" hint-placeholder-count="2">
+              <div onClick="{{ po.pick }}" style="{{ po.cardStyle }}">
+                <div style="display:flex;align-items:flex-start;gap:14px">
+                  <div style="{{ po.iconStyle }}">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ po.icon }}"></path></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="flex:1;font:700 16px/1.25 'Inter',sans-serif">{{ po.title }}</span>
+                      <span style="{{ po.radioStyle }}"></span>
+                    </div>
+                    <p style="margin:7px 0 0;font:400 12.5px/1.5 'Inter',sans-serif;color:#44474E;text-wrap:pretty">{{ po.desc }}</p>
+                  </div>
+                </div>
+                <div style="{{ po.listStyle }}">
+                  <sc-for list="{{ po.bullets }}" as="pb" hint-placeholder-count="3">
+                    <div style="display:flex;gap:9px;align-items:flex-start">
+                      <span style="width:15px;height:15px;border-radius:99px;background:#D6E4FF;color:#0D47A1;flex:none;text-align:center;font:700 9px/15px 'Inter',sans-serif">✓</span>
+                      <span style="flex:1;font:500 12px/1.45 'Inter',sans-serif;color:#001A42;text-wrap:pretty">{{ pb.text }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:16px;background:#FFECB3;border-radius:14px;padding:14px 16px;display:flex;gap:11px;align-items:flex-start">
+            <span style="width:7px;height:7px;border-radius:99px;background:#B26A00;flex:none;margin-top:6px"></span>
+            <span style="font:500 12px/1.5 'Inter',sans-serif;color:#7A4E00;text-wrap:pretty">Si eliges distribuidora, cada persona a la que le coloques tiene que hacer su propio KYC y autorizar su consulta de buró. Tú no puedes firmar por ella.</span>
+          </div>
+
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Continuar</div>
+        </div>
+      </sc-if>
+
+      <!-- 18 · COLOCACIÓN · BENEFICIARIO -->
+      <sc-if value="{{ isBene }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ goHome }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">Enviar préstamo</span>
+            <span style="{{ chipLine }}">Línea {{ lineAvail }}</span>
+          </div>
+
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="5">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:20px 0 0;font:800 24px/1.2 'Inter',sans-serif;letter-spacing:-1.1px;text-wrap:pretty">¿A quién le vas a prestar?</h2>
+          <p style="margin:10px 0 0;font:400 13.5px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">El crédito y el contrato quedan a nombre de esta persona. La deuda de tu línea sigue siendo tuya.</p>
+
+          <div style="margin-top:20px;background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">DATOS PARA EMPEZAR</span>
+            <sc-for list="{{ beneStart }}" as="bf" hint-placeholder-count="3">
+              <div>
+                <label style="{{ labelStyle }}">{{ bf.label }}</label>
+                <input value="{{ bf.value }}" onChange="{{ bf.onChange }}" placeholder="{{ bf.ph }}" style="{{ inputStyle }}">
+                <sc-if value="{{ bf.hint }}" hint-placeholder-val="{{ false }}">
+                  <div style="font:400 11px/1.4 'Inter',sans-serif;color:#9E9E9E;margin-top:7px">{{ bf.hint }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+            <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CÓMO SE VERIFICA</span>
+            <sc-for list="{{ kycModes }}" as="km" hint-placeholder-count="1">
+              <div onClick="{{ km.pick }}" style="{{ km.style }}">
+                <div style="{{ km.iconStyle }}">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ km.icon }}"></path></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 14px/1.25 'Inter',sans-serif">{{ km.title }}</div>
+                  <div style="font:400 11.5px/1.45 'Inter',sans-serif;color:#44474E;margin-top:5px;text-wrap:pretty">{{ km.desc }}</div>
+                </div>
+                <span style="{{ km.radioStyle }}"></span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div onClick="{{ beneNext }}" style="{{ beneCta }}">{{ beneCtaLabel }}</div>
+        </div>
+      </sc-if>
+
+      <!-- 19 · COLOCACIÓN · DOCUMENTOS DEL BENEFICIARIO -->
+      <sc-if value="{{ isBeneDocs }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">KYC de {{ beneFirst }}</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="5">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:20px 0 0;font:800 24px/1.2 'Inter',sans-serif;letter-spacing:-1.1px;text-wrap:pretty">Sus documentos, con ella presente</h2>
+          <p style="margin:10px 0 0;font:400 13.5px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Leemos la INE y prellenamos todo. Ella tiene que estar contigo para la selfie: es prueba de vida y no se puede saltar.</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+            <sc-for list="{{ beneDocs }}" as="bd" hint-placeholder-count="4">
+              <div onClick="{{ bd.tap }}" style="{{ bd.rowStyle }}">
+                <div style="{{ bd.iconStyle }}">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ bd.icon }}"></path></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 14px/1.25 'Inter',sans-serif">{{ bd.name }}</div>
+                  <div style="font:400 11.5px/1.4 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">{{ bd.hint }}</div>
+                </div>
+                <span style="{{ bd.chipStyle }}">{{ bd.state }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ beneOcrDone }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;background:#B2DFDB;border-radius:14px;padding:14px 16px;display:flex;gap:11px;align-items:flex-start">
+              <span style="width:18px;height:18px;border-radius:99px;background:#00695C;color:#fff;flex:none;text-align:center;font:700 10px/18px 'Inter',sans-serif">✓</span>
+              <span style="flex:1;font:500 12px/1.5 'Inter',sans-serif;color:#004D40;text-wrap:pretty">Leímos su INE: 9 campos prellenados. En el siguiente paso los revisan juntos.</span>
+            </div>
+          </sc-if>
+
+          <div onClick="{{ beneDocsNext }}" style="{{ beneDocsCta }}">{{ beneDocsLabel }}</div>
+        </div>
+      </sc-if>
+
+      <!-- 20 · COLOCACIÓN · VERIFICAR DATOS -->
+      <sc-if value="{{ isBeneData }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">KYC de {{ beneFirst }}</span>
+            <span style="{{ chipOcr }}">PRELLENADO</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="5">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:20px 0 0;font:800 24px/1.2 'Inter',sans-serif;letter-spacing:-1.1px;text-wrap:pretty">Revisen que todo esté bien</h2>
+          <p style="margin:10px 0 0;font:400 13.5px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Sale de su INE y del comprobante. Corrige lo que haga falta: un dato mal escrito tumba la solicitud en buró.</p>
+
+          <div style="margin-top:18px;background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ beneDataFields }}" as="bf" hint-placeholder-count="6">
+              <div>
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                  <label style="{{ labelStyle }}">{{ bf.label }}</label>
+                  <span style="{{ bf.srcStyle }}">{{ bf.src }}</span>
+                </div>
+                <input value="{{ bf.value }}" onChange="{{ bf.onChange }}" placeholder="{{ bf.ph }}" style="{{ inputStyle }}">
+              </div>
+            </sc-for>
+          </div>
+
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Datos correctos, continuar</div>
+        </div>
+      </sc-if>
+
+      <!-- 21 · COLOCACIÓN · CONSENTIMIENTO DEL BENEFICIARIO -->
+      <sc-if value="{{ isBeneConsent }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">Autorización de {{ beneFirst }}</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="5">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:20px;background:#0D47A1;border-radius:18px;padding:18px;display:flex;gap:13px;align-items:flex-start">
+            <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.15);color:#7FE8CE;flex:none;display:flex;align-items:center;justify-content:center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 20 6v6c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V6z"></path></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font:700 15px/1.25 'Inter',sans-serif;color:#fff;text-wrap:pretty">Pásale el teléfono a {{ beneFirst }}</div>
+              <div style="font:400 12px/1.5 'Inter',sans-serif;color:rgba(255,255,255,.72);margin-top:6px;text-wrap:pretty">De aquí en adelante autoriza ella, con su propio código. Es requisito de ley y protege a las dos partes.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ beneConsents }}" as="bc" hint-placeholder-count="3">
+              <div onClick="{{ bc.toggle }}" style="{{ bc.rowStyle }}">
+                <span style="{{ bc.boxStyle }}">✓</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 13.5px/1.3 'Inter',sans-serif">{{ bc.title }}</div>
+                  <div style="font:400 11.5px/1.5 'Inter',sans-serif;color:#44474E;margin-top:5px;text-wrap:pretty">{{ bc.desc }}</div>
+                  <div style="font:600 11px/1 'Inter',sans-serif;color:#0D47A1;margin-top:8px">{{ bc.link }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:14px;background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="font:600 13.5px/1.3 'Inter',sans-serif">Código a su celular</div>
+              <div style="font:400 11.5px/1.45 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">Enviado al {{ benePhoneMask }}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <sc-for list="{{ beneOtpBoxes }}" as="ob" hint-placeholder-count="6">
+                <div style="{{ ob.style }}">{{ ob.char }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <span style="font:400 11.5px/1 'Inter',sans-serif;color:#9E9E9E">{{ beneOtpNote }}</span>
+              <span onClick="{{ fillBeneOtp }}" style="font:600 12px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Simular código</span>
+            </div>
+          </div>
+
+          <div onClick="{{ beneConsentNext }}" style="{{ beneConsentCta }}">Autorizar y consultar buró</div>
+        </div>
+      </sc-if>
+
+      <!-- 25 · COLOCACIÓN · SEMÁFORO Y DECISIÓN DEL DISTRIBUIDOR -->
+      <sc-if value="{{ isBeneScore }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 22px 34px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">Historial de {{ beneFirst }}</span>
+            <span style="{{ chipOk }}">KYC OK</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="6">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:20px 0 0;font:800 24px/1.2 'Inter',sans-serif;letter-spacing:-1.1px;text-wrap:pretty">Esto encontramos de ella</h2>
+          <p style="margin:10px 0 0;font:400 13.5px/1.55 'Inter',sans-serif;color:#44474E;text-wrap:pretty">Consultamos su buró con la autorización que ella firmó. Te lo pasamos completo para que decidas con datos, no a ciegas.</p>
+
+          <div style="margin-top:18px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:center;gap:18px">
+              <div style="{{ scoreRingStyle }}">
+                <span style="font:800 30px/1 'Inter',sans-serif;letter-spacing:-1.4px">{{ beneScore }}</span>
+                <span style="font:600 8.5px/1 'Inter',sans-serif;letter-spacing:.13em;margin-top:7px">SCORE</span>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="{{ scoreTagStyle }}">{{ beneScoreTag }}</div>
+                <div style="font:700 17px/1.25 'Inter',sans-serif;margin-top:11px;text-wrap:pretty">{{ beneScoreTitle }}</div>
+                <div style="font:400 12.5px/1.5 'Inter',sans-serif;color:#44474E;margin-top:7px;text-wrap:pretty">{{ beneScoreDesc }}</div>
+              </div>
+            </div>
+            <div style="display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px">
+              <sc-for list="{{ scoreBands }}" as="sb" hint-placeholder-count="3">
+                <div style="{{ sb.style }}"></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1px;background:#EDEFF3;border-radius:12px;overflow:hidden">
+              <sc-for list="{{ beneRisk }}" as="br" hint-placeholder-count="5">
+                <div style="background:#fff;padding:13px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+                  <span style="font:400 12.5px/1.35 'Inter',sans-serif;color:#44474E">{{ br.k }}</span>
+                  <span style="{{ br.valueStyle }}">{{ br.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;background:#0D47A1;border-radius:18px;padding:18px;display:flex;gap:13px;align-items:flex-start">
+            <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.15);color:#7FE8CE;flex:none;display:flex;align-items:center;justify-content:center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 20 6v6c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V6zM12 8.5V12M12 15.3v.2"></path></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font:700 15px/1.25 'Inter',sans-serif;color:#fff;text-wrap:pretty">Kredius no aprueba ni rechaza: tú decides</div>
+              <div style="font:400 12px/1.5 'Inter',sans-serif;color:rgba(255,255,255,.72);margin-top:6px;text-wrap:pretty">No te limitamos la colocación por su historial. Si ella deja de pagar, el saldo de tu línea sigue siendo tuyo y tu bonificación de esos pagos se va a cero.</div>
+            </div>
+          </div>
+
+          <div onClick="{{ toggleRisk }}" style="{{ riskRowStyle }}">
+            <span style="{{ riskBoxStyle }}">✓</span>
+            <span style="flex:1;font:600 13px/1.45 'Inter',sans-serif;text-wrap:pretty">Vi su historial y asumo el riesgo de esta colocación.</span>
+          </div>
+
+          <div onClick="{{ approveBene }}" style="{{ approveCta }}">Aprobar y armar su crédito</div>
+          <div onClick="{{ goColocaciones }}" style="margin-top:12px;text-align:center;font:500 13px/1 'Inter',sans-serif;color:#B00020;cursor:pointer">No colocar por ahora</div>
+        </div>
+      </sc-if>
+
+      <!-- 22 · COLOCACIÓN · MONTO Y PLAZO -->
+      <sc-if value="{{ isBeneAmount }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;padding:96px 20px 30px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="{{ topBar }}">
+            <div onClick="{{ back }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:600 15px/1 'Inter',sans-serif">Enviar préstamo a {{ beneFirst }}</span>
+            <span style="{{ chipLine }}">Línea {{ lineAvail }}</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:20px">
+            <sc-for list="{{ beneSteps }}" as="bs" hint-placeholder-count="5">
+              <div style="{{ bs.style }}"></div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:18px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div>
+              <div style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">CUÁNTO LE PRESTAS</div>
+              <div style="font:800 36px/1 'Inter',sans-serif;letter-spacing:-1.8px;margin-top:12px">{{ colAmountLabel }}</div>
+            </div>
+            <input type="range" min="5000" max="60000" step="1000" value="{{ colAmount }}" onChange="{{ onColAmount }}" style="display:block;width:100%">
+            <div style="display:flex;justify-content:space-between;font:500 11.5px/1 'Inter',sans-serif;color:#9E9E9E"><span>$5,000</span><span>Tu línea: {{ lineAvail }}</span></div>
+          </div>
+
+          <div style="margin-top:12px;background:#fff;border:1px solid #E0E0E0;border-radius:20px;padding:20px">
+            <div style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">EN CUÁNTAS QUINCENAS TE PAGA</div>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
+              <div onClick="{{ colTermDown }}" style="{{ colDownStyle }}">−</div>
+              <div style="flex:1;text-align:center">
+                <div style="font:800 30px/1 'Inter',sans-serif;letter-spacing:-1.3px">{{ colTerm }}</div>
+                <div style="font:600 9.5px/1 'Inter',sans-serif;letter-spacing:.13em;color:#9E9E9E;margin-top:8px">QUINCENAS</div>
+              </div>
+              <div onClick="{{ colTermUp }}" style="{{ colUpStyle }}">+</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;background:#0D47A1;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden">
+            <div style="position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.35),rgba(0,184,148,0) 70%)"></div>
+            <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
+              <div>
+                <div style="font:500 11.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.62);margin-bottom:9px">Ella paga cada quincena</div>
+                <div style="font:800 28px/1 'Inter',sans-serif;color:#fff;letter-spacing:-1.3px">{{ colPagoLabel }}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font:500 11.5px/1 'Inter',sans-serif;color:rgba(255,255,255,.62);margin-bottom:9px">Tu bonificación</div>
+                <div style="font:800 22px/1 'Inter',sans-serif;color:#7FE8CE;letter-spacing:-1px">{{ colComLabel }}</div>
+              </div>
+            </div>
+            <div style="position:relative;height:1px;background:rgba(255,255,255,.18)"></div>
+            <div style="position:relative;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ colRows }}" as="cr" hint-placeholder-count="3">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                  <span style="font:400 12.5px/1.4 'Inter',sans-serif;color:rgba(255,255,255,.66)">{{ cr.k }}</span>
+                  <span style="font:700 13px/1.4 'Inter',sans-serif;color:#fff">{{ cr.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;background:#FFECB3;border-radius:14px;padding:13px 15px;display:flex;gap:10px;align-items:flex-start">
+            <span style="width:7px;height:7px;border-radius:99px;background:#B26A00;flex:none;margin-top:6px"></span>
+            <span style="flex:1;font:500 11.5px/1.5 'Inter',sans-serif;color:#7A4E00;text-wrap:pretty">La bonificación es del 20% sobre lo que cobras a tiempo. Cada día de atraso la baja: 17%, 14%, 10%, 6% y al quinto día, cero.</span>
+          </div>
+
+          <div onClick="{{ next }}" style="{{ ctaOn }}">Enviarle la liga por WhatsApp</div>
+        </div>
+      </sc-if>
+
+      <!-- 23 · COLOCACIÓN ENVIADA -->
+      <sc-if value="{{ isBeneSent }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="background:#0D47A1;padding:112px 24px 30px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden">
+            <div style="position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:99px;background:radial-gradient(circle,rgba(0,184,148,.32),rgba(0,184,148,0) 70%)"></div>
+            <div style="position:relative;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.15);color:#7FE8CE;display:flex;align-items:center;justify-content:center">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"></path></svg>
+            </div>
+            <h2 style="position:relative;margin:0;font:800 27px/1.15 'Inter',sans-serif;color:#fff;letter-spacing:-1.3px;text-wrap:pretty">Le mandamos la liga</h2>
+            <p style="position:relative;margin:0;font:400 13.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.7);text-wrap:pretty">{{ beneName }} · {{ colAmountLabel }} · {{ colTerm }} quincenas. Le mandamos la liga a su celular: en cuanto termine su verificación, la colocación aparece en tu lista.</p>
+          </div>
+
+          <div style="padding:22px 22px 30px;display:flex;flex-direction:column;flex:1">
+            <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:18px">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">QUÉ SIGUE</span>
+              <div style="margin-top:16px">
+                <sc-for list="{{ colTimeline }}" as="ct" hint-placeholder-count="4">
+                  <div style="display:flex;gap:13px">
+                    <div style="display:flex;flex-direction:column;align-items:center;flex:none">
+                      <span style="{{ ct.dotStyle }}"></span>
+                      <span style="{{ ct.lineStyle }}"></span>
+                    </div>
+                    <div style="padding-bottom:16px;flex:1">
+                      <div style="{{ ct.titleStyle }}">{{ ct.title }}</div>
+                      <div style="font:400 11.5px/1.45 'Inter',sans-serif;color:#9E9E9E;margin-top:5px;text-wrap:pretty">{{ ct.desc }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;background:#D6E4FF;border-radius:16px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start">
+              <span style="width:7px;height:7px;border-radius:99px;background:#0D47A1;flex:none;margin-top:6px"></span>
+              <span style="flex:1;font:500 12.5px/1.5 'Inter',sans-serif;color:#001A42;text-wrap:pretty">Tu línea sigue completa en {{ lineAvail }}: solo se descuenta cuando ella termine su verificación y tú apruebes. Nada queda apartado mientras tanto.</span>
+            </div>
+
+            <div style="margin-top:auto;padding-top:20px;display:flex;flex-direction:column;gap:11px">
+              <div onClick="{{ goColocaciones }}" style="height:52px;border-radius:12px;background:#0D47A1;color:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 'Inter',sans-serif;cursor:pointer">Ver mis colocaciones</div>
+              <div onClick="{{ goColoca }}" style="text-align:center;font:500 13px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Colocar a alguien más</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- RECHAZADO -->
+      <sc-if value="{{ isRejected }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="background:#0D47A1;padding:112px 24px 30px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:14px">
+            <div style="width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5"></path><path d="M12 16.3v.2"></path></svg>
+            </div>
+            <h2 style="margin:0;font:800 28px/1.15 'Inter',sans-serif;color:#fff;letter-spacing:-1.3px;text-wrap:pretty">Hoy no pudimos aprobarte</h2>
+            <p style="margin:0;font:400 13.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.68);text-wrap:pretty">No es un no para siempre. Tu historial cambia mes con mes, y en cuanto se mueva volvemos a revisarlo sin que tengas que hacer nada.</p>
+          </div>
+
+          <div style="padding:22px 22px 30px;display:flex;flex-direction:column;flex:1">
+            <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">POR QUÉ</span>
+              <sc-for list="{{ rejectReasons }}" as="rr" hint-placeholder-count="3">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <span style="width:8px;height:8px;border-radius:99px;background:#B00020;flex:none;margin-top:6px"></span>
+                  <div style="flex:1">
+                    <div style="font:600 13.5px/1.3 'Inter',sans-serif">{{ rr.title }}</div>
+                    <div style="font:400 12px/1.45 'Inter',sans-serif;color:#44474E;margin-top:5px;text-wrap:pretty">{{ rr.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:14px;background:#D6E4FF;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:13px">
+              <div>
+                <div style="font:700 15px/1.25 'Inter',sans-serif;color:#001A42">Qué te acerca a un sí</div>
+                <div style="font:400 12.5px/1.45 'Inter',sans-serif;color:#0D47A1;margin-top:6px;text-wrap:pretty">Tres cosas que sí están en tus manos, en orden de peso.</div>
+              </div>
+              <sc-for list="{{ rejectTips }}" as="rt" hint-placeholder-count="3">
+                <div style="display:flex;gap:11px;align-items:flex-start">
+                  <span style="width:20px;height:20px;border-radius:99px;background:#0D47A1;color:#fff;flex:none;display:flex;align-items:center;justify-content:center;font:700 10px/1 'Inter',sans-serif">{{ rt.n }}</span>
+                  <span style="flex:1;font:500 12.5px/1.45 'Inter',sans-serif;color:#001A42;text-wrap:pretty">{{ rt.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:14px;background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:13px">
+              <div style="width:38px;height:38px;border-radius:11px;background:#FFECB3;color:#B26A00;flex:none;display:flex;align-items:center;justify-content:center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>
+              </div>
+              <div style="flex:1">
+                <div style="font:600 13.5px/1.25 'Inter',sans-serif">Te avisamos el 8 de noviembre</div>
+                <div style="font:400 11.5px/1.4 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">Puedes volver a solicitar en 90 días.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;padding-top:20px;display:flex;flex-direction:column;gap:11px">
+              <div onClick="{{ goHome }}" style="height:52px;border-radius:12px;background:#0D47A1;color:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 'Inter',sans-serif;cursor:pointer">Entendido, ir a mi inicio</div>
+              <div style="text-align:center;font:500 13px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Hablar con alguien de Kredius</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- NOTIFICACIONES -->
+      <sc-if value="{{ isNotif }}" hint-placeholder-val="{{ false }}">
+        <div style="height:874px;background:#EBF0F7;padding:96px 0 0;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="padding:0 20px;display:flex;align-items:center;gap:12px">
+            <div onClick="{{ goHome }}" style="{{ backBtn }}">←</div>
+            <span style="flex:1;font:700 19px/1 'Inter',sans-serif;letter-spacing:-.7px">Notificaciones</span>
+            <span style="font:600 12px/1 'Inter',sans-serif;color:#0D47A1;cursor:pointer">Marcar leídas</span>
+          </div>
+          <div style="padding:14px 20px 0;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none">
+            <sc-for list="{{ notifFilters }}" as="nf" hint-placeholder-count="4">
+              <span onClick="{{ nf.go }}" style="{{ nf.style }}">{{ nf.label }}</span>
+            </sc-for>
+          </div>
+          <div style="flex:1;min-height:0;overflow:auto;padding:16px 20px 24px;display:flex;flex-direction:column;gap:16px">
+            <sc-for list="{{ notifGroups }}" as="ng" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#9E9E9E">{{ ng.day }}</span>
+                <div style="background:#fff;border:1px solid #E0E0E0;border-radius:18px;padding:2px 16px">
+                  <sc-for list="{{ ng.rows }}" as="n" hint-placeholder-count="3">
+                    <div style="{{ n.rowStyle }}">
+                      <div style="{{ n.iconStyle }}">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.icon }}"></path></svg>
+                      </div>
+                      <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;gap:7px">
+                          <span style="font:600 13.5px/1.25 'Inter',sans-serif;flex:1;text-wrap:pretty">{{ n.title }}</span>
+                          <span style="{{ n.dotStyle }}"></span>
+                        </div>
+                        <div style="font:400 12px/1.45 'Inter',sans-serif;color:#44474E;margin-top:5px;text-wrap:pretty">{{ n.body }}</div>
+                        <div style="display:flex;align-items:center;gap:9px;margin-top:8px">
+                          <span style="{{ n.chipStyle }}">{{ n.tag }}</span>
+                          <span style="font:400 10.5px/1 'Inter',sans-serif;color:#9E9E9E">{{ n.time }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <div style="background:#fff;border:1px solid #E0E0E0;border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px">
+              <div style="width:38px;height:38px;border-radius:11px;background:#EBF0F7;color:#0D47A1;flex:none;display:flex;align-items:center;justify-content:center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 14.1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9.9 3H10a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1.3z"></path></svg>
+              </div>
+              <div style="flex:1">
+                <div style="font:600 13.5px/1.25 'Inter',sans-serif">Elige qué te avisamos</div>
+                <div style="font:400 11.5px/1.4 'Inter',sans-serif;color:#9E9E9E;margin-top:5px">Pagos, ofertas y avisos de seguridad, por separado.</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 12 · CONTRAOFERTA -->
+      <sc-if value="{{ isCounter }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:874px;background:#EBF0F7;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="background:#0D47A1;padding:112px 24px 30px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:13px">
+            <span style="align-self:flex-start;padding:7px 13px;border-radius:99px;background:rgba(255,143,0,.2);font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#FFD08A">NO ALCANZASTE EL MONTO QUE PEDISTE</span>
+            <h2 style="margin:0;font:800 28px/1.15 'Inter',sans-serif;color:#fff;letter-spacing:-1.3px">Pero sí tenemos algo para ti</h2>
+            <p style="margin:0;font:400 13.5px/1.55 'Inter',sans-serif;color:rgba(255,255,255,.65);text-wrap:pretty">Con tu perfil actual podemos autorizarte un monto menor. Es real, es tuyo y lo puedes tomar hoy.</p>
+          </div>
+          <div style="padding:22px 22px 30px;display:flex;flex-direction:column;flex:1">
+            <div style="background:#fff;border:2px solid #0D47A1;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+              <span style="font:600 10px/1 'Inter',sans-serif;letter-spacing:.12em;color:#0D47A1">CONTRAOFERTA</span>
+              <div style="font:800 42px/1 'Inter',sans-serif;letter-spacing:-2.2px">$8,000</div>
+              <div style="height:1px;background:#EDEFF3"></div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 13px/1 'Inter',sans-serif;color:#44474E">Pagas cada mes</span><span style="font:700 17px/1 'Inter',sans-serif">$812</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 13px/1 'Inter',sans-serif;color:#44474E">Total a pagar (12 meses)</span><span style="font:700 15px/1 'Inter',sans-serif">$9,744</span></div>
+            </div>
+            <h3 style="margin:24px 0 12px;font:700 17px/1.2 'Inter',sans-serif;letter-spacing:-.5px">Qué levanta tu monto</h3>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ counterTips }}" as="t" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #E0E0E0;border-radius:12px;padding:13px 15px;display:flex;gap:12px;align-items:flex-start">
+                  <span style="width:7px;height:7px;border-radius:99px;background:#FF8F00;flex:none;margin-top:6px"></span>
+                  <span style="font:500 13px/1.45 'Inter',sans-serif;text-wrap:pretty">{{ t.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ acceptCounter }}" style="{{ ctaOn }}">Aceptar $8,000</div>
+            <div style="margin-top:14px;text-align:center;font:500 12.5px/1 'Inter',sans-serif;color:#9E9E9E;cursor:pointer">Avísame en 3 meses</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </x-import>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Presentación&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 0, product: 0, amount: 15000, term: 24, consent: false, terms: false, otp: '', astep: 0, tab: 0,
+    dstep: 0, hasAccount: true, clabe: '', bene: '', openCredit: -1, movFilter: 0,
+    acc: { privacy: false, bureau: false, marketing: false }, vcode: '',
+    form: {
+      nombres: 'María', apellidoPaterno: 'López', apellidoMaterno: '',
+      fechaNacimiento: '19/02/1988', genero: 'Femenino', estadoNacimiento: 'Ciudad de México',
+      curp: 'LOMA880219MDFPRR08', rfc: 'LOMA880219K21',
+      calle: 'Av. Coyoacán', numeroExterior: '1435', numeroInterior: '4B', colonia: 'Del Valle Centro',
+      municipio: 'Benito Juárez', ciudad: 'Ciudad de México', estado: 'Ciudad de México', codigoPostal: '03100',
+      celular: '55 4218 9034', email: 'maria.lopez@mail.com', ingreso: '$18,500'
+    }
+  };
+
+  PRODUCTS() {
+    return [
+      { key: 'PERSONAL_LOAN', for: 'self', name: 'Préstamo personal', short: 'préstamo personal', initial: 'P', segment: 'B2C', behavior: 'A plazo', freq: 'Mensual',
+        desc: 'Efectivo libre a tu cuenta, sin comprobar en qué lo usas.', badge: 'RECOMENDADO', max: 25000, min: 5000, rate: 0.349, terms: [6, 12, 18, 24, 36], ok: true,
+        use: 'Recibes el monto completo en tu cuenta y lo pagas en mensualidades fijas. Sirve para juntar deudas, salud, escuela o un gasto que no esperabas.' },
+      { key: 'PAYROLL_LOAN', for: 'self', name: 'Crédito de nómina', short: 'nómina', initial: 'N', segment: 'B2C', behavior: 'A plazo', freq: 'Quincenal',
+        desc: 'Se descuenta de tu sueldo: el pago mensual más bajo.', badge: 'AUTORIZADO', max: 25000, min: 5000, rate: 0.239, terms: [6, 12, 18, 24, 36], ok: true,
+        use: 'El pago se descuenta directo de tu nómina, por eso es la opción más barata de todas.' },
+      { key: 'REVOLVING_LINE', for: 'self', name: 'Línea revolvente', short: 'línea revolvente', initial: 'L', segment: 'B2C', behavior: 'Revolvente', freq: 'Mensual',
+        desc: 'Dispón, paga y vuelve a disponer las veces que quieras.', badge: 'AUTORIZADO', max: 15000, min: 5000, rate: 0.399, terms: [6, 12, 18, 24], ok: true,
+        use: 'Una línea siempre lista: solo pagas por lo que dispones y el monto se libera conforme abonas. Cada disposición arma su propia tabla.' },
+      { key: 'DISTRIBUTOR_LINE', for: 'dist', name: 'Línea de distribuidor', short: 'línea de distribuidor', initial: 'D', segment: 'B2B2C', behavior: 'Revolvente', freq: 'Mensual',
+        desc: 'Presta a tus clientes con tu línea y gana bonificación.', badge: 'PASA A COMITÉ', max: 250000, min: 25000, rate: 0.289, terms: [6, 12, 18, 24], ok: true,
+        use: 'Tú dispones y el dinero llega directo a la persona que eliges como beneficiaria. Tú ganas una bonificación por cada cobranza puntual y Kredius te cobra solo por lo dispuesto.' },
+      { key: 'GROUP_LOAN', for: 'self', name: 'Crédito grupal', short: 'crédito grupal', initial: 'G', segment: 'B2C', behavior: 'A plazo', freq: 'Semanal',
+        desc: 'Con tu grupo de 5, todos responden por todos.', badge: 'AUTORIZADO', max: 20000, min: 5000, rate: 0.319, terms: [4, 8, 12, 16], ok: true,
+        use: 'Un crédito para tu grupo, con pagos semanales y aval solidario entre integrantes.' },
+      { key: 'SME_LOAN', for: 'dist', name: 'Crédito PyME', short: 'crédito PyME', initial: 'E', segment: 'B2B', behavior: 'A plazo', freq: 'Mensual',
+        desc: 'Requiere RFC con actividad empresarial vigente.', badge: 'NO DISPONIBLE', max: 800000, min: 50000, rate: 0.249, terms: [12, 24, 36], ok: false,
+        use: 'Capital de trabajo para tu negocio, evaluado por comité.' }
+    ];
+  }
+
+  STEPS() {
+    return [
+      'Alta · bienvenida', 'Alta · tu celular', 'Alta · aviso y autorización', 'Alta · código SMS',
+      'Alta · tipo de perfil', 'Alta · documentos y datos', 'Alta · análisis de riesgo',
+      'Alta · aprobado', 'Alta · rechazado', 'Alta · contraoferta',
+      'Inicio · solo ofertas', 'Contratar · oportunidades', 'Contratar · cómo funciona',
+      'Contratar · monto y plazo', 'Contratar · resumen', 'Contratar · firma', 'Contratar · desembolso',
+      'Inicio · solo línea de distribuidor', 'Inicio · sin línea, solo uso propio',
+      'Inicio · un crédito', 'Inicio · varios créditos', 'Movimientos',
+      'Enviar préstamo · a quién', 'Enviar préstamo · monto y plazo', 'Enviar préstamo · liga enviada',
+      'Enviar préstamo · su historial y tu decisión',
+      'Colocaciones', 'Beneficiarios', 'Perfil y contratos', 'Notificaciones'
+    ];
+  }
+
+  RAIL() {
+    return [
+      { s: 0 }, { s: 1 }, { s: 2 }, { s: 3 }, { s: 17 }, { s: 4 }, { s: 5 },
+      { s: 6 }, { s: 15 }, { s: 14 },
+      { s: 13, tab: 0, h: 0 }, { s: 7 }, { s: 8 }, { s: 9 }, { s: 10 }, { s: 11 }, { s: 12 },
+      { s: 13, tab: 0, h: 3 }, { s: 13, tab: 0, h: 4 },
+      { s: 13, tab: 0, h: 1 }, { s: 13, tab: 0, h: 2 }, { s: 13, tab: 1 },
+      { s: 18 }, { s: 22 }, { s: 23 }, { s: 25 },
+      { s: 13, tab: 2, h: 1 }, { s: 13, tab: 3, h: 1 }, { s: 13, tab: 4 }, { s: 16 }
+    ];
+  }
+
+  componentWillUnmount() { clearInterval(this._t); }
+
+  go = (n) => {
+    clearInterval(this._t);
+    const r = this.RAIL()[n];
+    if (!r) return;
+    const st = { screen: r.s, login: false };
+    if (r.tab !== undefined) st.tab = r.tab;
+    if (r.h !== undefined) st.hstate = r.h;
+    this.setState(st);
+    if (r.s === 5) this.runAnalysis();
+  };
+  runAnalysis = () => {
+    clearInterval(this._t);
+    this.setState({ astep: 0 });
+    this._t = setInterval(() => {
+      const a = this.state.astep + 1;
+      if (a > 4) { clearInterval(this._t); this.setState({ screen: 6 }); }
+      else this.setState({ astep: a });
+    }, 850);
+  };
+
+  money = (n) => '$' + Math.round(n).toLocaleString('en-US');
+
+  calc() {
+    const p = this.PRODUCTS()[this.state.product];
+    const amt = Math.max(p.min, Math.min(this.state.amount, p.max));
+    const i = p.rate / 12, n = this.state.term;
+    const pago = amt * i / (1 - Math.pow(1 + i, -n));
+    return { p, amt, pago, total: pago * n, interes: pago * n - amt };
+  }
+
+  renderVals() {
+    const s = this.state, P = this.PRODUCTS(), c = this.calc(), p = c.p;
+    const TERMS = p.terms;
+    const ti = TERMS.indexOf(s.term) < 0 ? Math.floor(TERMS.length / 2) : TERMS.indexOf(s.term);
+    const hs = s.hstate === undefined ? 1 : s.hstate;
+    const prof = s.profile || 'dist';
+    if (s.screen >= 7 && s.screen <= 10 && this.PRODUCTS()[s.product] && this.PRODUCTS()[s.product].for !== prof) {
+      const fallback = this.PRODUCTS().findIndex(x => x.for === prof);
+      if (fallback >= 0 && fallback !== s.product) setTimeout(() => this.setState({ product: fallback }), 0);
+    }
+    const bstep = { 18: 0, 22: 1, 23: 2, 25: 2 }[s.screen] ?? 0;
+    const riskOk = s.riskOk === undefined ? true : s.riskOk;
+    const kmode = s.kmode === undefined ? 0 : s.kmode;
+    const bdocsDone = s.bdocsDone === undefined ? 4 : s.bdocsDone;
+    const bcons = s.bcons || { 0: true, 1: true, 2: true };
+    const bconsOk = !!(bcons[0] && bcons[1] && bcons[2]);
+    const BDEF = {
+      bname: 'María Luisa Cortés Hernández', bphone: '55 4182 9037', brel: 'Clienta de mi tienda desde 2023',
+      bcurp: 'COHM880219MDFRRL04', brfc: 'COHM880219K21', bborn: '19/02/1988',
+      baddr: 'Av. Insurgentes Sur 1602, Col. Crédito Constructor, CDMX',
+      bocc: 'Comerciante independiente', bincome: '$18,000'
+    };
+    const bv = (k) => (s[k] !== undefined ? s[k] : (BDEF[k] || ''));
+    const COLT = [12, 24, 36, 48];
+    const colT = COLT.indexOf(s.colTerm) < 0 ? 24 : s.colTerm;
+    const cti = COLT.indexOf(colT);
+    const colAmt = s.colAmount === undefined ? 45000 : s.colAmount;
+    const colI = 0.289 / 24;
+    const colPago = colAmt * colI / (1 - Math.pow(1 + colI, -colT));
+    const acct = s.acct === undefined ? 0 : s.acct;
+    const isLinea = prof === 'dist' && acct === 0;
+    const bq = s.bquery === undefined ? '' : s.bquery;
+    const brandDark = [6, 12, 14, 15, 23].indexOf(s.screen) >= 0;
+    const inApp = [13, 16].indexOf(s.screen) >= 0;
+    const mvf = s.movFilter === undefined ? 0 : s.movFilter;
+    const hasLine = prof === 'dist' && (hs === 1 || hs === 2 || hs === 3);
+    if (!hasLine && (s.tab === 2 || s.tab === 3)) setTimeout(() => this.setState({ tab: 0 }), 0);
+    const MOVS = (prof === 'dist' && (hs === 1 || hs === 2 || hs === 3)) ? [
+      { day: 'HOY · 16 AGO', title: 'Bonificación por cobranza', meta: 'María Luisa Cortés · 20% de $4,200', amount: '+ $840.00', time: '11:40', kind: 'in', src: 1, type: 3 },
+      { day: 'HOY · 16 AGO', title: 'Cobranza recibida', meta: 'María Luisa Cortés · pago 18 de 24', amount: '+ $4,200.00', time: '11:38', kind: 'in', src: 1, type: 2 },
+      { day: 'AYER · 15 AGO', title: 'Disposición de línea', meta: 'Colocada a Carmen Alicia Ponce · SPEI', amount: '− $9,000.00', time: '16:22', kind: 'out', src: 1, type: 1 },
+      { day: 'AYER · 15 AGO', title: 'Bonificación por cobranza', meta: 'Abarrotes La Luz · 20% de $5,600', amount: '+ $1,120.00', time: '09:05', kind: 'in', src: 1, type: 3 },
+      { day: '12 AGO', title: 'Pago de mi crédito', meta: 'Préstamo personal · pago 6 de 48', amount: '− $742.00', time: '08:00', kind: 'out', src: 2, type: 2 },
+      { day: '08 AGO', title: 'Bonificación reducida', meta: 'Ramiro Ocampo · 14% por 2 días de atraso', amount: '+ $266.00', time: '13:10', kind: 'in', src: 1, type: 3 }
+    ] : [
+      { day: 'HOY · 16 AGO', title: 'Pago de mi crédito', meta: 'Préstamo personal · pago 6 de 48', amount: '− $742.00', time: '08:00', kind: 'out', src: 1, type: 2 },
+      { day: 'AYER · 15 AGO', title: 'Disposición de línea', meta: 'Línea revolvente · SPEI a tu cuenta', amount: '+ $4,000.00', time: '17:30', kind: 'in', src: 2, type: 1 },
+      { day: '05 AGO', title: 'Pago de mi crédito', meta: 'Préstamo personal · pago 5 de 48', amount: '− $742.00', time: '08:00', kind: 'out', src: 1, type: 2 },
+      { day: '20 JUL', title: 'Desembolso inicial', meta: 'Préstamo personal · $25,000 a tu cuenta', amount: '+ $25,000.00', time: '10:42', kind: 'in', src: 1, type: 1 }
+    ];
+    const cta = (on) => 'margin-top:22px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font:600 16px/1 \'Inter\',sans-serif;cursor:pointer;background:' + (on ? '#0D47A1' : '#E0E0E0') + ';color:' + (on ? '#fff' : '#9E9E9E') + ';box-shadow:' + (on ? '0 8px 20px rgba(13,71,161,.26)' : 'none');
+    const navTab = (i) => 'flex:1;height:58px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:' + (s.tab === i ? '#0D47A1' : '#9AA2B1') + ';background:' + (s.tab === i ? '#EBF0F7' : 'transparent');
+    const stepper = (on) => 'width:50px;height:50px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;font:600 24px/1 \'Inter\',sans-serif;cursor:pointer;background:' + (on ? '#D6E4FF' : '#F0F1F4') + ';color:' + (on ? '#0D47A1' : '#C4C6CC');
+
+    return {
+      showRail: this.props.showRail ?? true,
+      topBar: 'display:flex;align-items:center;gap:14px',
+      backBtn: 'width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font:600 16px/1 \'Inter\',sans-serif;cursor:pointer;flex:none',
+      ctaOn: cta(true),
+
+      steps: this.STEPS().map((label, i) => {
+        const r = this.RAIL()[i];
+        const act = r.s !== 13 ? (s.screen === r.s)
+          : (s.screen === 13 && s.tab === r.tab && (r.h === undefined || s.hstate === r.h));
+        return {
+          label, num: String(i + 1).padStart(2, '0'), go: () => this.go(i),
+          style: 'display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;cursor:pointer;color:' + (act ? '#0D47A1' : '#44474E') + ';background:' + (act ? '#D6E4FF' : 'transparent'),
+          numStyle: 'font:600 10px/1 \'Inter\',sans-serif;letter-spacing:.08em;width:22px;color:' + (act ? '#0D47A1' : '#C4C6CC')
+        };
+      }),
+
+      tabResumen: s.tab === 0, tabLinea: s.tab === 1,
+      tabColoca: s.tab === 2 && hasLine, tabBene: s.tab === 3 && hasLine,
+      tabCreditos: false, tabMovs: false, tabPerfil: s.tab === 4,
+      tabs: (hasLine
+        ? [{ i: 0, label: 'Inicio', icon: 'M3.5 10.5 12 4l8.5 6.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z' },
+           { i: 1, label: 'Movimientos', icon: 'M4 7h13l-2.5-2.5M20 17H7l2.5 2.5' },
+           { i: 2, label: 'Colocaciones', icon: 'M6 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M18 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M18 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M8.2 10.8 15.8 7.2M8.2 13.2l7.6 3.6' },
+           { i: 3, label: 'Beneficiarios', icon: 'M9.5 4.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5M3 20a6.5 6.5 0 0 1 13 0M16.5 13.5l2 2 3.5-3.5' }]
+        : [{ i: 0, label: 'Inicio', icon: 'M3.5 10.5 12 4l8.5 6.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z' },
+           { i: 1, label: 'Movimientos', icon: 'M4 7h13l-2.5-2.5M20 17H7l2.5 2.5' },
+           { i: 9, label: 'Oportunidades', icon: 'M12 3.5 14.6 9l6 .9-4.3 4.2 1 6-5.3-2.8-5.3 2.8 1-6L3.4 9.9 9.4 9z' }]
+      ).map(t => ({
+        label: t.label, icon: t.icon,
+        go: () => t.i === 9 ? this.setState({ screen: 7 }) : this.setState({ screen: 13, tab: t.i }),
+        style: 'flex:1;height:58px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:' + (s.tab === t.i ? '#0D47A1' : '#7A8296') + ';background:' + (s.tab === t.i ? '#EBF0F7' : 'transparent')
+      })),
+      showBrand: !(s.login || s.screen === 0),
+      brandBarStyle: 'position:absolute;top:44px;left:16px;right:16px;height:38px;display:flex;align-items:center;gap:10px;z-index:5',
+      brandLeftStyle: 'flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-start;' + (inApp ? '' : 'visibility:hidden'),
+      brandActionsStyle: 'flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;' + (inApp ? '' : 'visibility:hidden'),
+      brandBellStyle: 'width:34px;height:34px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:' + (brandDark ? '#fff' : '#44474E') + ';background:' + (brandDark ? 'rgba(255,255,255,.16)' : '#fff') + ';border:1px solid ' + (brandDark ? 'transparent' : '#E0E0E0'),
+      brandDotStyle: s.screen === 16 ? 'display:none' : 'position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:99px;background:#FF8F00;border:1.5px solid ' + (brandDark ? '#0D47A1' : '#fff'),
+      brandAvatarStyle: 'width:34px;height:34px;border-radius:99px;flex:none;text-align:center;cursor:pointer;font:700 12px/34px \'Inter\',sans-serif;color:' + (brandDark ? '#0D47A1' : '#fff') + ';background:' + (brandDark ? '#fff' : '#0D47A1'),
+      brandMarkStyle: 'width:24px;height:24px;border-radius:7px;position:relative;overflow:hidden;flex:none;background:' + (brandDark ? 'rgba(255,255,255,.18)' : '#0D47A1'),
+      brandStemStyle: 'position:absolute;left:6px;top:5.5px;width:2.6px;height:13px;border-radius:1.5px;background:#fff',
+      brandUpStyle: 'position:absolute;left:9px;top:10px;width:10px;height:2.6px;border-radius:1.5px;background:#00B894;transform:rotate(-45deg);transform-origin:left center',
+      brandDownStyle: 'position:absolute;left:9px;top:10px;width:10px;height:2.6px;border-radius:1.5px;background:#fff;transform:rotate(45deg);transform-origin:left center',
+      brandTextStyle: 'font:800 14px/1 \'Inter\',sans-serif;letter-spacing:-.7px;color:' + (brandDark ? '#fff' : '#0D47A1'),
+
+      userShort: 'María López',
+      userInitials: 'ML', // titular
+      goCreditos: () => this.setState({ tab: 1 }),
+      goPerfil: () => this.setState({ screen: 13, tab: 4 }),
+      goTab0: () => this.setState({ tab: 0 }),
+      goTab1: () => this.setState({ tab: 1 }),
+      goTab2: () => this.setState({ tab: 2 }),
+      tab0Style: navTab(0), tab1Style: navTab(1),
+      tab2Style: 'flex:1;height:58px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#7A8296;background:transparent',
+
+      lineaDisponible: this.money(Math.max(0, p.max - c.amt)),
+      creditFacts: [
+        { label: 'Monto original', value: '$25,000' },
+        { label: 'Pagado a capital', value: '$3,700' },
+        { label: 'Pagos hechos', value: '6 de 48' },
+        { label: 'Contratado', value: '08 may 2026' }
+      ],
+
+      movGroups: MOVS.filter(m => (acct === 0 || m.src === acct) && (mvf === 0 || m.type === mvf))
+        .reduce((acc, m) => {
+          const g = acc.find(x => x.day === m.day);
+          if (g) g.rows.push(m); else acc.push({ day: m.day, rows: [m] });
+          return acc;
+        }, [])
+        .map(g => ({
+        day: g.day, total: g.rows.length + (g.rows.length === 1 ? ' movimiento' : ' movimientos'),
+        rows: g.rows.map((m, i, arr) => ({
+          title: m.title, meta: m.meta, amount: m.amount, time: m.time,
+          initial: m.kind === 'in' ? '↓' : '↑',
+          rowStyle: 'display:flex;align-items:center;gap:12px;padding:14px 0;' + (i < arr.length - 1 ? 'border-bottom:1px solid #EDEFF3' : ''),
+          iconStyle: 'width:38px;height:38px;border-radius:99px;flex:none;text-align:center;font:700 15px/38px \'Inter\',sans-serif;color:' + (m.kind === 'in' ? '#00695C' : '#44474E') + ';background:' + (m.kind === 'in' ? '#B2DFDB' : '#EDEFF3'),
+          amountStyle: 'font:700 14px/1 \'Inter\',sans-serif;color:' + (m.kind === 'in' ? '#00695C' : '#1A1C1E')
+        }))
+      })),
+      contracts: [
+        { name: 'Préstamo personal', meta: 'Firmado 08 ago 2026 · $' + Math.round(c.amt).toLocaleString('en-US'), status: 'VIGENTE' },
+        { name: 'Línea revolvente', meta: 'Firmado 12 mar 2026 · $15,000 de línea', status: 'VIGENTE' },
+        { name: 'Línea de distribuidor', meta: 'Firmado 02 abr 2026 · $250,000 de línea', status: 'VIGENTE' }
+      ].map(ct => ({
+        name: ct.name, meta: ct.meta, status: ct.status,
+        chipStyle: 'padding:5px 9px;border-radius:99px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.08em;flex:none;color:' + (ct.status === 'VIGENTE' ? '#00695C' : '#44474E') + ';background:' + (ct.status === 'VIGENTE' ? '#B2DFDB' : '#EDEFF3')
+      })),
+
+      isWelcome: s.screen === 0 && !s.login,
+      isLogin: s.screen === 0 && !!s.login,
+      openLogin: () => this.setState({ login: true }),
+      closeLogin: () => this.setState({ login: false }),
+      doLogin: () => this.setState({ login: false, screen: 13 }),
+      loginUser: s.loginUser === undefined ? '55 1234 5678' : s.loginUser,
+      loginPwd: s.loginPwd === undefined ? '••••••••' : s.loginPwd,
+      onLoginUser: (e) => this.setState({ loginUser: e.target.value }),
+      onLoginPwd: (e) => this.setState({ loginPwd: e.target.value }),
+      pwdType: s.showPwd ? 'text' : 'password',
+      pwdLabel: s.showPwd ? 'Ocultar' : 'Ver',
+      togglePwd: () => this.setState({ showPwd: !s.showPwd }),
+      loginInputStyle: 'width:100%;box-sizing:border-box;height:52px;border-radius:12px;padding:0 14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);outline:none;color:#fff;font:500 15px/1 \'Inter\',sans-serif',
+      loginProviders: [{ label: 'Google' }, { label: 'Apple' }],
+      phone: s.phone === undefined ? '55 1234 5678' : s.phone,
+      email: s.email === undefined ? 'maria.lopez@correo.com' : s.email,
+      onPhone: (e) => this.setState({ phone: e.target.value }),
+      onEmail: (e) => this.setState({ email: e.target.value }),
+      phoneMasked: '+52 ' + String(s.phone === undefined ? '55 1234 5678' : s.phone).replace(/\d(?=(?:\D*\d){4})/g, '•'),
+      phoneInputStyle: 'width:100%;box-sizing:border-box;height:52px;border-radius:12px;padding:0 14px;border:1px solid #E0E0E0;background:#F6F8FC;outline:none;color:#1A1C1E;font:500 15px/1 \'Inter\',sans-serif',
+      phoneCtaStyle: 'margin-top:auto;height:52px;border-radius:12px;background:#0D47A1;color:#fff;display:flex;align-items:center;justify-content:center;font:600 16px/1 \'Inter\',sans-serif;cursor:pointer',
+      phoneNotes: [
+        { text: 'Nunca compartimos tu número ni te llamamos para venderte nada.' },
+        { text: 'Si cambias de número después, lo actualizas desde tu perfil.' }
+      ],
+      toPrivacy: () => this.go(2),
+
+      legalDocs: [
+        { name: 'Aviso de privacidad integral', meta: 'Qué datos guardamos, para qué y por cuánto tiempo · 4 min de lectura' },
+        { name: 'Términos de uso de Kredius', meta: 'Reglas de la app y de tu cuenta · 3 min de lectura' }
+      ],
+      consents: [
+        { key: 'privacy', text: 'Leí y acepto el aviso de privacidad y los términos de uso.', tag: 'OBLIGATORIO', req: true },
+        { key: 'bureau', text: 'Autorizo expresamente a Kredius a consultar mi historial en buró y círculo de crédito durante 90 días.', tag: 'OBLIGATORIO', req: true },
+        { key: 'marketing', text: 'Quiero recibir ofertas y novedades de Kredius por SMS y correo.', tag: 'OPCIONAL', req: false }
+      ].map(c => {
+        const on = !!(s.acc && s.acc[c.key]);
+        return {
+          text: c.text, tag: c.tag,
+          toggle: () => this.setState({ acc: Object.assign({}, s.acc, { [c.key]: !on }) }),
+          boxStyle: 'display:flex;gap:11px;align-items:flex-start;padding:14px;border-radius:14px;cursor:pointer;background:' + (on ? '#D6E4FF' : '#fff') + ';border:1px solid ' + (on ? '#0D47A1' : '#E0E0E0'),
+          tickStyle: 'width:20px;height:20px;border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;font:700 11px/1 \'Inter\',sans-serif;color:' + (on ? '#fff' : 'transparent') + ';background:' + (on ? '#0D47A1' : '#EBF0F7') + ';border:1px solid ' + (on ? '#0D47A1' : '#E0E0E0'),
+          tagStyle: 'flex:none;align-self:center;padding:3px 7px;border-radius:99px;font:600 8.5px/1.5 \'Inter\',sans-serif;letter-spacing:.08em;color:' + (c.req ? '#B26A00' : '#9E9E9E') + ';background:' + (c.req ? '#FFECB3' : '#EBF0F7')
+        };
+      }),
+      toVerify: () => { if (s.acc && s.acc.privacy && s.acc.bureau) this.go(3); },
+
+      verifyCells: [0, 1, 2, 3, 4, 5].map(i => {
+        const v = String(s.vcode || '');
+        return {
+          char: v[i] || '',
+          style: 'flex:1;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:700 24px/1 \'Inter\',sans-serif;color:#0D47A1;background:#fff;border:1.5px solid ' + (v.length === i ? '#0D47A1' : '#E0E0E0')
+        };
+      }),
+      clearVerify: () => this.setState({ vcode: '' }),
+      verifyKeys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(label => ({
+        label,
+        style: 'height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font:600 21px/1 \'Inter\',sans-serif;color:#1A1C1E;cursor:' + (label ? 'pointer' : 'default') + ';background:' + (label ? '#fff' : 'transparent') + ';border:' + (label ? '1px solid #E0E0E0' : 'none'),
+        press: () => {
+          if (!label) return;
+          const cur = String(s.vcode || '');
+          if (label === '⌫') return this.setState({ vcode: cur.slice(0, -1) });
+          const v = (cur + label).slice(0, 6);
+          this.setState({ vcode: v });
+          if (v.length === 6) setTimeout(() => this.go(4), 420);
+        }
+      })),
+
+      isPhone: s.screen === 1, isConsent: s.screen === 2, isVerify: s.screen === 3,
+      isDatos: s.screen === 4, isAnalyzing: s.screen === 5,
+      isApproved: s.screen === 6, isOffers: s.screen === 7, isHow: s.screen === 8, isConfig: s.screen === 9,
+      isSummary: s.screen === 10, isSign: s.screen === 11, isDone: s.screen === 12, isHome: s.screen === 13,
+      isCounter: s.screen === 14, isRejected: s.screen === 15, isNotif: s.screen === 16,
+
+      next: () => this.setState({ screen: ({ 3: 17, 17: 4, 22: 23 })[s.screen] || s.screen + 1, login: false }),
+      back: () => this.setState({ screen: ({ 17: 3, 4: 17, 18: 13, 22: 18, 23: 13, 25: 13 })[s.screen] || Math.max(0, s.screen - 1), login: false }),
+      restart: () => this.setState({ screen: 7 }),
+      toSign: () => { if (s.terms) this.setState({ screen: 11 }); },
+      acceptCounter: () => this.setState({ screen: 9, product: 0, amount: 8000, term: 12 }),
+      goHome: () => this.setState({ screen: 13, tab: 0 }),
+      goHomeEmpty: () => this.setState({ screen: 13, tab: 0, hstate: 0 }),
+      goNotif: () => this.setState({ screen: 16 }),
+      goOffers: () => this.setState({ screen: 7 }),
+      goColoca: () => this.setState({ screen: 18 }),
+      goColocaciones: () => this.setState({ screen: 13, tab: 2 }),
+
+      isProfileType: s.screen === 17, isBene: s.screen === 18, isBeneDocs: s.screen === 19,
+      isBeneData: s.screen === 20, isBeneConsent: s.screen === 21, isBeneAmount: s.screen === 22,
+      isBeneSent: s.screen === 23,
+
+      labelStyle: 'display:block;font:600 11px/1 \'Inter\',sans-serif;letter-spacing:.06em;color:#44474E;margin-bottom:9px',
+      inputStyle: 'width:100%;box-sizing:border-box;height:48px;border-radius:12px;border:1px solid #E0E0E0;background:#F7F9FC;padding:0 14px;font:500 14px/1 \'Inter\',sans-serif;color:#0F1A2E;outline:none',
+      chipLine: 'padding:6px 10px;border-radius:99px;background:#D6E4FF;font:600 10px/1 \'Inter\',sans-serif;color:#0D47A1;white-space:nowrap',
+      chipOcr: 'padding:6px 10px;border-radius:99px;background:#B2DFDB;font:600 9.5px/1 \'Inter\',sans-serif;letter-spacing:.08em;color:#00695C;white-space:nowrap',
+      chipOk: 'padding:6px 10px;border-radius:99px;background:#B2DFDB;font:600 9.5px/1 \'Inter\',sans-serif;letter-spacing:.08em;color:#00695C;white-space:nowrap',
+
+      profileOptions: [
+        { key: 'self', title: 'Para mí', icon: 'M12 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7M5 20a7 7 0 0 1 14 0',
+          desc: 'Uso propio: el dinero llega a tu cuenta y tú lo pagas.',
+          bullets: [{ text: 'Préstamo personal, nómina, revolvente y grupal' }, { text: 'Un solo expediente: el tuyo' }, { text: 'Depósito directo a tu CLABE' }] },
+        { key: 'dist', title: 'Para colocar a terceros', icon: 'M6 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M18 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M18 15.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M8.2 10.8 15.8 7.2M8.2 13.2l7.6 3.6',
+          desc: 'Distribuidora: prestas con nuestra línea y ganas bonificación.',
+          bullets: [{ text: 'Línea revolvente de $25,000 a $500,000' }, { text: 'KYC de cada beneficiario desde la app' }, { text: '20% de bonificación sobre lo que cobras a tiempo' }] }
+      ].map(o => {
+        const on = prof === o.key;
+        return {
+          title: o.title, desc: o.desc, icon: o.icon, bullets: o.bullets,
+          pick: () => this.setState({ profile: o.key }),
+          cardStyle: 'border-radius:20px;padding:18px;cursor:pointer;background:#fff;border:' + (on ? '2px solid #0D47A1' : '1px solid #E0E0E0'),
+          iconStyle: 'width:42px;height:42px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;color:' + (on ? '#fff' : '#0D47A1') + ';background:' + (on ? '#0D47A1' : '#D6E4FF'),
+          radioStyle: 'width:20px;height:20px;border-radius:99px;flex:none;box-sizing:border-box;border:' + (on ? '6px solid #0D47A1' : '2px solid #C9D3E3'),
+          listStyle: 'margin-top:14px;padding-top:14px;border-top:1px solid #EDEFF3;display:flex;flex-direction:column;gap:9px;' + (on ? '' : 'display:none')
+        };
+      }),
+
+      beneSteps: [0, 1, 2].map(i => ({
+        style: 'flex:1;height:5px;border-radius:99px;background:' + (i <= bstep ? '#0D47A1' : '#D8DEE8')
+      })),
+
+      beneFirst: (bv('bname') || 'la beneficiaria').split(' ')[0],
+      beneName: bv('bname'),
+      benePhoneMask: '55 •• •• 90 37',
+      lineAvail: '$205,000',
+      lineAfter: this.money(205000 - colAmt),
+
+      beneStart: [
+        { label: 'Nombre completo, como en su INE', key: 'bname', ph: 'María Luisa Cortés Hernández', hint: '' },
+        { label: 'Su celular a 10 dígitos', key: 'bphone', ph: '55 4182 9037', hint: 'Ahí le llega su código para autorizar. Tiene que ser suyo, no el tuyo.' },
+        { label: 'Cómo la conoces', key: 'brel', ph: 'Clienta de mi tienda desde 2023', hint: 'Nos ayuda a validar la relación comercial.' }
+      ].map(f => ({
+        label: f.label, ph: f.ph, hint: f.hint, value: bv(f.key),
+        onChange: (e) => this.setState({ [f.key]: e.target.value })
+      })),
+
+      kycModes: [
+        { key: 0, title: 'Ella se verifica sola', icon: 'M9.5 14.5 14.5 9.5M8 12H6.5a3.5 3.5 0 0 1 0-7H10M14 5h3.5a3.5 3.5 0 0 1 0 7H16',
+          desc: 'Le llega una liga por WhatsApp: pone su código, fotografía su INE y se toma su video. Desde su propio celular, sin ti.' }
+      ].map(m => {
+        const on = kmode === m.key;
+        return {
+          title: m.title, desc: m.desc, icon: m.icon,
+          pick: () => this.setState({ kmode: m.key }),
+          style: 'display:flex;align-items:flex-start;gap:13px;padding:16px;border-radius:16px;cursor:pointer;background:#fff;border:' + (on ? '2px solid #0D47A1' : '1px solid #E0E0E0'),
+          iconStyle: 'width:38px;height:38px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;color:' + (on ? '#fff' : '#0D47A1') + ';background:' + (on ? '#0D47A1' : '#D6E4FF'),
+          radioStyle: 'width:20px;height:20px;border-radius:99px;flex:none;margin-top:2px;box-sizing:border-box;border:' + (on ? '6px solid #0D47A1' : '2px solid #C9D3E3')
+        };
+      }),
+      beneReady: !!(bv('bname') && bv('bphone')),
+      beneCta: cta(!!(bv('bname') && bv('bphone'))),
+      beneCtaLabel: 'Continuar',
+      beneNext: () => { if (bv('bname') && bv('bphone')) this.setState({ screen: 22 }); },
+
+
+
+
+      isBeneScore: s.screen === 25,
+      chipInfo: 'padding:6px 10px;border-radius:99px;background:#FFECB3;font:600 9.5px/1 \'Inter\',sans-serif;letter-spacing:.08em;color:#B26A00;white-space:nowrap',
+      beneScore: 664,
+      beneScoreTag: 'RIESGO MEDIO',
+      beneScoreTitle: 'Paga, pero se ha atrasado',
+      beneScoreDesc: 'Cumple con sus dos créditos actuales y trae un atraso de 29 días en los últimos dos años. No es un historial limpio ni uno malo.',
+      scoreRingStyle: 'width:96px;height:96px;border-radius:99px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FFECB3;color:#B26A00',
+      scoreTagStyle: 'display:inline-block;padding:5px 10px;border-radius:99px;background:#FFECB3;color:#B26A00;font:600 9.5px/1 \'Inter\',sans-serif;letter-spacing:.09em',
+      scoreBands: [
+        { label: 'bajo', pct: 33, on: false, color: '#B00020' },
+        { label: 'medio', pct: 34, on: true, color: '#FF8F00' },
+        { label: 'alto', pct: 33, on: false, color: '#00B894' }
+      ].map(b => ({ style: 'flex:' + b.pct + ';background:' + b.color + ';opacity:' + (b.on ? '1' : '.22') })),
+      beneRisk: [
+        { k: 'Peor atraso en 24 meses', v: '29 días', tone: 'warn' },
+        { k: 'Créditos vigentes', v: '2, ambos al corriente', tone: 'ok' },
+        { k: 'Deuda contra su ingreso', v: '38%', tone: 'ok' },
+        { k: 'Consultas en 6 meses', v: '2', tone: 'ok' },
+        { k: 'Recomendación de Kredius', v: 'Colocar con reserva', tone: 'warn' }
+      ].map(r => ({
+        k: r.k, v: r.v,
+        valueStyle: 'font:700 12.5px/1.35 \'Inter\',sans-serif;text-align:right;color:' + ({ ok: '#00695C', warn: '#B26A00', bad: '#B00020' })[r.tone]
+      })),
+      toggleRisk: () => this.setState({ riskOk: !riskOk }),
+      riskRowStyle: 'margin-top:14px;display:flex;align-items:flex-start;gap:13px;padding:16px;border-radius:16px;cursor:pointer;background:#fff;border:1px solid ' + (riskOk ? '#0D47A1' : '#E0E0E0'),
+      riskBoxStyle: 'width:22px;height:22px;border-radius:7px;flex:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 12px/1 \'Inter\',sans-serif;color:' + (riskOk ? '#fff' : 'transparent') + ';background:' + (riskOk ? '#0D47A1' : '#F0F1F4') + ';border:' + (riskOk ? 'none' : '2px solid #C9D3E3'),
+      approveCta: cta(riskOk),
+      approveBene: () => { if (riskOk) this.setState({ screen: 13, tab: 2 }); },
+
+      isDistProfile: hasLine,
+      lineStatus: 'AL CORRIENTE',
+      lineStatusStyle: 'padding:5px 9px;border-radius:99px;background:rgba(255,255,255,.16);font:600 9px/1.4 \'Inter\',sans-serif;letter-spacing:.06em;color:#fff;white-space:nowrap;flex:none',
+      distFacts: [
+        { k: 'Total a cobrar', v: '$11,700' },
+        { k: 'Pago a Kredius', v: '$3,180' },
+        { k: 'Vencimiento', v: '05 sep' },
+        { k: 'Bonificación', v: '$2,340', good: true }
+      ].map(d => ({ k: d.k, v: d.v, valueStyle: 'font:700 13.5px/1 \'Inter\',sans-serif;margin-top:6px;letter-spacing:-.3px;color:' + (d.good ? '#7FE8CE' : '#fff') })),
+
+      colAmount: colAmt, colAmountLabel: this.money(colAmt), colTerm: colT,
+      colRowsTitle: 'Enviar préstamo',
+      onColAmount: (e) => this.setState({ colAmount: Number(e.target.value) }),
+      colTermUp: () => this.setState({ colTerm: COLT[Math.min(COLT.length - 1, cti + 1)] }),
+      colTermDown: () => this.setState({ colTerm: COLT[Math.max(0, cti - 1)] }),
+      colUpStyle: stepper(cti < COLT.length - 1), colDownStyle: stepper(cti > 0),
+      colPagoLabel: this.money(colPago), colComLabel: this.money(colPago * 0.20),
+      colRows: [
+        { k: 'Total que te paga', v: this.money(colPago * colT) },
+        { k: 'Tu bonificación si cobras todo a tiempo', v: this.money(colPago * colT * 0.20) },
+        { k: 'Tu línea después de este préstamo', v: this.money(205000 - colAmt) }
+      ],
+      colTimeline: [
+        { title: 'Liga enviada a su celular', desc: 'Al 55 •• •• 90 37. Vive 7 días; si no la completa, la colocación no se crea y tu línea nunca se toca.', tone: 'ok' },
+        { title: 'Ella se verifica desde su teléfono', desc: 'Su código, su INE y su prueba de vida. Es todo o nada: si le falta algo, no avanza.', tone: 'warn' },
+        { title: 'Consultamos su buró', desc: 'Con la autorización que ella firma, no la tuya. Te pasamos el resultado para que decidas.', tone: 'faint' },
+        { title: 'Depósito a su cuenta', desc: 'Cuando apruebes, le llega el mismo día por SPEI.', tone: 'faint' }
+      ].map((t, i, arr) => ({
+        title: t.title, desc: t.desc,
+        dotStyle: 'width:11px;height:11px;border-radius:99px;flex:none;background:' + ({ ok: '#00695C', warn: '#FF8F00', faint: '#C9D3E3' })[t.tone],
+        lineStyle: 'width:2px;flex:1;background:#EDEFF3;' + (i === arr.length - 1 ? 'display:none' : ''),
+        titleStyle: 'font:600 13.5px/1.25 \'Inter\',sans-serif;color:' + (t.tone === 'faint' ? '#9E9E9E' : '#0F1A2E')
+      })),
+
+      accounts: (hasLine
+        ? ['Todos', 'Línea de distribuidor', 'Mis créditos']
+        : ['Todos', 'Préstamo personal', 'Línea revolvente']
+      ).map((label, i) => ({
+        label,
+        pick: () => this.setState({ acct: i }),
+        style: 'flex:none;padding:9px 15px;border-radius:99px;font:600 12.5px/1 \'Inter\',sans-serif;cursor:pointer;white-space:nowrap;color:' + (acct === i ? '#fff' : '#44474E') + ';background:' + (acct === i ? '#0D47A1' : '#fff') + ';border:1px solid ' + (acct === i ? '#0D47A1' : '#E0E0E0')
+      })),
+
+      beneQuery: bq, beneHasQuery: !!bq,
+      onBeneQuery: (e) => this.setState({ bquery: e.target.value }),
+      clearBeneQuery: () => this.setState({ bquery: '' }),
+      beneList: [
+        { name: 'María Luisa Cortés', phone: '5541829037', initials: 'MC', meta: 'Clienta desde 2023 · 2 préstamos contigo', state: 'ACTIVO', tone: 'ok',
+          facts: [{ k: 'Le has prestado', v: '$63,000' }, { k: 'Saldo hoy', v: '$45,000' }, { k: 'Bonificación ganada', v: '$3,240', good: true }, { k: 'Puntualidad', v: '100%', good: true }] },
+        { name: 'Abarrotes La Luz', phone: '5539104488', initials: 'AL', meta: 'Negocio · desde 2024 · 3 préstamos', state: 'ACTIVO', tone: 'ok',
+          facts: [{ k: 'Le has prestado', v: '$140,000' }, { k: 'Saldo hoy', v: '$60,000' }, { k: 'Bonificación ganada', v: '$8,400', good: true }, { k: 'Puntualidad', v: '96%', good: true }] },
+        { name: 'Ramiro Ocampo', phone: '5588213390', initials: 'RO', meta: 'Cliente desde 2025 · 1 préstamo', state: 'ATRASO', tone: 'bad',
+          facts: [{ k: 'Le has prestado', v: '$18,000' }, { k: 'Saldo hoy', v: '$18,000' }, { k: 'Bonificación ganada', v: '$266' }, { k: 'Puntualidad', v: '78%', bad: true }] },
+        { name: 'Rosa Elena Díaz', phone: '5549029037', initials: 'RD', meta: 'Nueva · terminando su verificación', state: 'EN ALTA', tone: 'warn',
+          facts: [{ k: 'Solicitado', v: '$18,000' }, { k: 'Saldo hoy', v: '—' }, { k: 'Bonificación estimada', v: '$4,704', good: true }, { k: 'Puntualidad', v: 'sin historial' }] },
+        { name: 'Julio César Manzo', phone: '5512760455', initials: 'JM', meta: 'Liquidó en jun 2026 · 1 préstamo', state: 'LIQUIDÓ', tone: 'muted',
+          facts: [{ k: 'Le prestaste', v: '$9,000' }, { k: 'Saldo hoy', v: '$0' }, { k: 'Bonificación ganada', v: '$1,800', good: true }, { k: 'Puntualidad', v: '100%', good: true }] }
+      ].filter(b => !bq || (b.name + ' ' + (b.phone || '')).toLowerCase().indexOf(bq.toLowerCase()) >= 0).map((b, i, arr) => {
+        const col = { ok: ['#00695C', '#B2DFDB'], warn: ['#B26A00', '#FFECB3'], bad: ['#B00020', '#FFDAD6'], muted: ['#7A8296', '#EDEFF3'] }[b.tone];
+        const open = (s.openBene ?? -1) === i;
+        return {
+          name: b.name, initials: b.initials, meta: b.meta, state: b.state, expanded: open,
+          open: () => this.setState({ openBene: open ? -1 : i }),
+          rowStyle: 'padding:15px 0;cursor:pointer;' + (i < arr.length - 1 || open ? 'border-bottom:1px solid #EDEFF3' : ''),
+          avatarStyle: 'width:38px;height:38px;border-radius:12px;flex:none;text-align:center;font:700 12.5px/38px \'Inter\',sans-serif;color:#0D47A1;background:#D6E4FF',
+          chipStyle: 'padding:5px 9px;border-radius:99px;font:600 9px/1.4 \'Inter\',sans-serif;letter-spacing:.06em;white-space:nowrap;flex:none;color:' + col[0] + ';background:' + col[1],
+          facts: b.facts.map(x => ({ k: x.k, v: x.v, valueStyle: 'font:700 13px/1 \'Inter\',sans-serif;margin-top:7px;color:' + (x.good ? '#00695C' : (x.bad ? '#B00020' : '#0F1A2E')) }))
+        };
+      }),
+
+      colFilters: ['Todas', 'Al corriente', 'Con atraso'].map((label, i) => ({
+        label, go: () => this.setState({ cfilter: i }),
+        style: 'flex:none;padding:8px 14px;border-radius:99px;font:600 12px/1 \'Inter\',sans-serif;cursor:pointer;white-space:nowrap;color:' + ((s.cfilter || 0) === i ? '#fff' : '#44474E') + ';background:' + ((s.cfilter || 0) === i ? '#0D47A1' : '#fff') + ';border:1px solid ' + ((s.cfilter || 0) === i ? '#0D47A1' : '#E0E0E0')
+      })),
+      placements: [
+        { name: 'María Luisa Cortés', initials: 'MC', meta: 'Colocada 22 jul · 18 de 24 quincenas', state: 'AL CORRIENTE', tone: 'ok',
+          amount: '$45,000', pay: '$4,200', fee: '+$840' },
+        { name: 'Abarrotes La Luz', initials: 'AL', meta: 'Colocada 02 jul · 30 de 36 quincenas', state: 'AL CORRIENTE', tone: 'ok',
+          amount: '$60,000', pay: '$5,600', fee: '+$1,120' },
+        { name: 'Ramiro Ocampo', initials: 'RO', meta: 'Pagó al día 2 · bonificación al 14%', state: 'ATRASO 2 DÍAS', tone: 'bad',
+          amount: '$18,000', pay: '$1,900', fee: '+$266' },
+        { name: 'Carmen Alicia Ponce', initials: 'CP', meta: 'Colocada 08 ago · 2 de 12 quincenas', state: 'AL CORRIENTE', tone: 'ok',
+          amount: '$9,000', pay: '$820', fee: '+$164' },
+        { name: 'Julio César Manzo', initials: 'JM', meta: 'Sin pagar desde el 12 ago', state: 'ATRASO 5 DÍAS', tone: 'bad',
+          amount: '$30,000', pay: '$0', fee: '$0' }
+      ].map(p => {
+        const col = { ok: ['#00695C', '#B2DFDB'], warn: ['#B26A00', '#FFECB3'], bad: ['#B00020', '#FFDAD6'] }[p.tone];
+        return {
+          name: p.name, initials: p.initials, meta: p.meta, state: p.state,
+          amount: p.amount, pay: p.pay, fee: p.fee,
+          feeStyle: 'font:600 11px/1 \'Inter\',sans-serif;margin-top:6px;color:' + (p.fee === '$0' ? '#B00020' : '#00695C'),
+          open: () => this.setState({ tab: 3 }),
+          rowStyle: 'display:flex;align-items:center;gap:11px;padding:14px 0;cursor:pointer;border-bottom:1px solid #EDEFF3',
+          avatarStyle: 'width:34px;height:34px;border-radius:11px;flex:none;text-align:center;font:700 11.5px/34px \'Inter\',sans-serif;color:#0D47A1;background:#D6E4FF',
+          chipStyle: 'padding:3px 7px;border-radius:99px;font:600 8px/1.4 \'Inter\',sans-serif;letter-spacing:.05em;white-space:nowrap;flex:none;color:' + col[0] + ';background:' + col[1]
+        };
+      }),
+
+      hNone: hs === 0, hasOwn: hs === 1 || hs === 2 || hs === 4,
+      ownRowStyle: hs === 2
+        ? 'display:flex;gap:11px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px'
+        : 'display:flex',
+      ownName: 'Préstamo personal', ownBalance: '$21,300', ownPago: '$742', ownProgress: '6 DE 48 PAGOS',
+      offersTitle: hs === 0 ? 'Tenemos 3 oportunidades listas para ti' : (hs === 3 ? 'También puedes pedir para ti' : (hs === 4 ? 'Puedes crecer tu línea' : 'Todavía hay más para ti')),
+      offersCopy: hs === 0
+        ? 'Tu perfil abrió tres líneas de crédito. Míralas con calma y toma la que te cuadre — no tienes que decidir hoy.'
+        : (hs === 3
+          ? 'Tu línea es para colocar a terceros. Si necesitas un crédito propio, tu perfil ya trae opciones autorizadas.'
+          : (hs === 4
+            ? 'Si te dedicas a prestar, la línea de distribuidor te deja colocar con nuestro dinero y quedarte con el 20% de lo que cobres.'
+            : 'Además de lo que ya tienes, hay líneas disponibles esperando el día que las necesites.')),
+
+      activeCredits: [
+        { name: 'Préstamo personal', initial: 'PP', status: 'AL CORRIENTE', tone: 'ok', meta: 'Próximo pago el 05 de septiembre',
+          balance: '$21,300', nextLabel: 'Próximo pago', next: '$742', pct: 12, progress: '6 DE 48 PAGOS', cta: 'Pagar $742' },
+        { name: 'Línea revolvente', initial: 'LR', status: 'DISPONIBLE', tone: 'info', meta: 'Próximo corte el 28 de agosto',
+          balance: '$4,000', nextLabel: 'Corte', next: '28 ago', pct: 40, progress: '$6,000 DISPONIBLES', cta: 'Disponer' },
+        { name: 'Crédito de nómina', initial: 'CN', status: 'AL CORRIENTE', tone: 'ok', meta: 'Próximo pago el 31 de agosto',
+          balance: '$9,850', nextLabel: 'Próximo pago', next: '$486', pct: 22, progress: '5 DE 24 PAGOS', cta: 'Pagar $486' }
+      ].slice(0, hs === 2 ? 3 : 1).map(c => ({
+        name: c.name, initial: c.initial, status: c.status, meta: c.meta, balance: c.balance,
+        nextLabel: c.nextLabel, next: c.next, progress: c.progress, cta: c.cta,
+        go: () => this.setState({ tab: 1 }),
+        cardStyle: (hs === 2 ? 'flex:none;width:250px;' : 'width:100%;') + 'background:#0D47A1;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:11px;box-sizing:border-box;position:relative;overflow:hidden',
+        iconStyle: 'width:38px;height:38px;border-radius:11px;flex:none;text-align:center;font:700 12.5px/38px \'Inter\',sans-serif;color:#0D47A1;background:#D6E4FF',
+        chipStyle: 'padding:5px 9px;border-radius:99px;font:600 9px/1.4 \'Inter\',sans-serif;letter-spacing:.06em;white-space:nowrap;flex:none;color:#fff;background:rgba(255,255,255,.16)',
+        barStyle: 'height:100%;width:' + c.pct + '%;border-radius:99px;background:#00B894'
+      })),
+      activeDots: (hs === 2 ? [0, 1, 2] : []).map(i => ({ style: 'width:' + (i === 0 ? '16px' : '6px') + ';height:6px;border-radius:99px;background:' + (i === 0 ? '#0D47A1' : '#C9D3E3') })),
+
+      rejectReasons: [
+        { title: 'Tienes un atraso vigente', desc: 'Buró reporta un pago vencido de más de 60 días en otra institución. Es lo que más pesa hoy.' },
+        { title: 'Tu deuda actual está alta', desc: 'Ya comprometes el 68% de tu ingreso mensual. Nuestro límite de política es 45%.' },
+        { title: 'Muchas consultas recientes', desc: 'Siete solicitudes de crédito en los últimos seis meses. Eso enciende una alerta automática.' }
+      ],
+      rejectTips: [
+        { n: '1', text: 'Ponte al corriente en el crédito atrasado. Es lo que más mueve la aguja.' },
+        { n: '2', text: 'Baja tu deuda actual: cada pago que liquides libera capacidad.' },
+        { n: '3', text: 'No pidas crédito en otro lado por unos meses. Deja que se enfríen las consultas.' }
+      ],
+
+      notifFilters: ['Todas', 'Mi crédito', 'Oportunidades', 'Seguridad'].map((label, i) => ({
+        label, go: () => this.setState({ nfilter: i }),
+        style: 'flex:none;padding:8px 14px;border-radius:99px;font:600 12px/1 \'Inter\',sans-serif;cursor:pointer;white-space:nowrap;color:' + ((s.nfilter || 0) === i ? '#fff' : '#44474E') + ';background:' + ((s.nfilter || 0) === i ? '#0D47A1' : '#fff') + ';border:1px solid ' + ((s.nfilter || 0) === i ? '#0D47A1' : '#E0E0E0')
+      })),
+      notifGroups: [
+        { day: 'HOY', rows: [
+          { title: 'Tu pago vence en 3 días', body: 'El 5 de septiembre se domicilia $742 de tu préstamo personal. Ten fondos ese día.', tag: 'MI CRÉDITO', tone: 'warn', time: 'hace 2 h', unread: true, icon: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17M12 7.5V12l3 1.8' },
+          { title: 'Subimos tu línea a $32,000', body: 'Llevas seis pagos puntuales. Tu línea creció $7,000 sin que hicieras nada.', tag: 'OPORTUNIDAD', tone: 'ok', time: 'hace 5 h', unread: true, icon: 'M4 18l5-6 4 3.5 7-8M15 7.5h5v5' }
+        ] },
+        { day: 'ESTA SEMANA', rows: [
+          { title: 'Recibimos tu pago de $742', body: 'Aplicado a tu préstamo personal el 20 de agosto. Van 6 de 48.', tag: 'MI CRÉDITO', tone: 'ok', time: 'lun 20 ago', unread: false, icon: 'M5 12.5l4.5 4.5L19 7.5' },
+          { title: 'Entraste desde un equipo nuevo', body: 'iPhone 15 en Ciudad de México. Si no fuiste tú, avísanos ahora mismo.', tag: 'SEGURIDAD', tone: 'bad', time: 'dom 19 ago', unread: false, icon: 'M12 3.5 20 6v6c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V6z' },
+          { title: 'Tu contrato ya está firmado', body: 'Guardamos el PDF en tu perfil. Puedes descargarlo cuando quieras.', tag: 'MI CRÉDITO', tone: 'info', time: 'sáb 18 ago', unread: false, icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5' }
+        ] }
+      ].map(g => ({
+        day: g.day,
+        rows: g.rows.map((n, i, arr) => {
+          const col = { ok: ['#00695C', '#B2DFDB'], warn: ['#B26A00', '#FFECB3'], bad: ['#B00020', '#FFDAD6'], info: ['#0D47A1', '#D6E4FF'] }[n.tone];
+          return {
+            title: n.title, body: n.body, tag: n.tag, time: n.time, icon: n.icon,
+            rowStyle: 'display:flex;gap:12px;align-items:flex-start;padding:15px 0;' + (i < arr.length - 1 ? 'border-bottom:1px solid #EDEFF3' : ''),
+            iconStyle: 'width:36px;height:36px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;color:' + col[0] + ';background:' + col[1],
+            chipStyle: 'padding:3px 8px;border-radius:99px;font:600 8.5px/1.5 \'Inter\',sans-serif;letter-spacing:.07em;color:' + col[0] + ';background:' + col[1],
+            dotStyle: 'width:8px;height:8px;border-radius:99px;flex:none;background:' + (n.unread ? '#FF8F00' : 'transparent')
+          };
+        })
+      })),
+
+      heroStats: [{ value: '3 min', label: 'SOLICITUD' }, { value: '15 min', label: 'DEPÓSITO' }, { value: '$0', label: 'APERTURA' }],
+
+      dataTabs: ['1 · Documentos', '2 · Verifica tus datos'].map((label, i) => ({
+        label, go: () => this.setState({ dstep: i }),
+        style: 'flex:1;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:600 12.5px/1 \'Inter\',sans-serif;cursor:pointer;color:' + (s.dstep === i ? '#0D47A1' : '#7A8296') + ';background:' + (s.dstep === i ? '#fff' : 'transparent') + ';box-shadow:' + (s.dstep === i ? '0 1px 3px rgba(26,28,30,.10)' : 'none')
+      })),
+      dataStepDocs: s.dstep === 0, dataStepForm: s.dstep === 1,
+      dataTitle: s.dstep === 0 ? 'Sube tus documentos' : 'Confirma que esté bien',
+      dataSubtitle: s.dstep === 0
+        ? 'Con tu INE llenamos tus datos automáticamente. Solo tendrás que revisarlos.'
+        : 'Esto fue lo que leímos de tu INE y tu comprobante. Corrige lo que no cuadre.',
+      dataCtaLabel: s.dstep === 0 ? 'Leer mis documentos' : 'Todo está correcto',
+      nextData: () => { if (s.dstep === 0) this.setState({ dstep: 1 }); else this.go(5); },
+
+      formGroups: [
+        { title: 'IDENTIDAD', source: 'INE · OCR', rows: [
+          { k: 'nombres', label: 'Nombres', ph: 'María' },
+          { k: 'apellidoPaterno', label: 'Apellido paterno', ph: 'López' },
+          { k: 'apellidoMaterno', label: 'Apellido materno (opcional)', ph: '—' },
+          { k: 'fechaNacimiento', label: 'Fecha de nacimiento', ph: 'DD/MM/AAAA' },
+          { k: 'genero', label: 'Género', ph: 'Masculino' },
+          { k: 'estadoNacimiento', label: 'Estado de nacimiento', ph: 'Ciudad de México' }
+        ] },
+        { title: 'CLAVES FISCALES', source: 'VALIDADO', rows: [
+          { k: 'curp', label: 'CURP', ph: '18 caracteres' },
+          { k: 'rfc', label: 'RFC', ph: '13 caracteres' }
+        ] },
+        { title: 'DOMICILIO', source: 'CP VALIDADO', rows: [
+          { k: 'calle', label: 'Calle', ph: 'Av. Coyoacán' },
+          { k: 'numeroExterior', label: 'Número exterior', ph: '1435' },
+          { k: 'numeroInterior', label: 'Número interior (opcional)', ph: '4B' },
+          { k: 'colonia', label: 'Colonia', ph: 'Del Valle Centro' },
+          { k: 'municipio', label: 'Municipio / alcaldía', ph: 'Benito Juárez' },
+          { k: 'ciudad', label: 'Ciudad', ph: 'Ciudad de México' },
+          { k: 'estado', label: 'Estado', ph: 'Ciudad de México' },
+          { k: 'codigoPostal', label: 'Código postal', ph: '03100' }
+        ] },
+        { title: 'CONTACTO E INGRESO', source: 'OTP VERIFICADO', rows: [
+          { k: 'celular', label: 'Celular', ph: '55 0000 0000' },
+          { k: 'email', label: 'Email', ph: 'tu@correo.com' },
+          { k: 'ingreso', label: 'Ingreso mensual', ph: '$18,500' }
+        ] }
+      ].map(g => ({
+        title: g.title, source: g.source,
+        chipStyle: 'padding:4px 8px;border-radius:99px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.08em;color:#00695C;background:#B2DFDB',
+        rows: g.rows.map(r => ({
+          label: r.label, placeholder: r.ph, value: s.form[r.k] || '',
+          onChange: (e) => this.setState({ form: Object.assign({}, this.state.form, { [r.k]: e.target.value }) }),
+          inputStyle: 'height:48px;border-radius:12px;border:1px solid ' + (s.form[r.k] ? '#C9D4E5' : '#E0E0E0') + ';background:#fff;padding:0 14px;font:500 14.5px/1 \'Inter\',sans-serif;color:#1A1C1E;outline:none;width:100%;box-sizing:border-box'
+        }))
+      })),
+
+      documents: [
+        { name: 'INE · frente', hint: 'Foto nítida, sin reflejos', done: true },
+        { name: 'INE · reverso', hint: 'Que se lea el código de barras', done: true },
+        { name: 'Selfie de vida', hint: 'Prueba de vida con parpadeo', done: true },
+        { name: 'Comprobante de domicilio', hint: 'No mayor a 3 meses', done: false }
+      ].map(d => ({
+        name: d.name, hint: d.hint, state: d.done ? 'LISTO' : 'CAPTURAR',
+        capture: () => {},
+        cardStyle: 'background:#fff;border-radius:16px;padding:15px;display:flex;align-items:center;gap:13px;cursor:pointer;border:1px solid ' + (d.done ? '#E0E0E0' : '#0D47A1'),
+        iconStyle: 'width:42px;height:42px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;color:' + (d.done ? '#00695C' : '#0D47A1') + ';background:' + (d.done ? '#B2DFDB' : '#D6E4FF'),
+        chipStyle: 'padding:5px 9px;border-radius:99px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.08em;flex:none;color:' + (d.done ? '#00695C' : '#0D47A1') + ';background:' + (d.done ? '#B2DFDB' : '#D6E4FF')
+      })),
+
+      fieldGroups: [
+        { title: 'IDENTIDAD', source: 'INE · OCR', rows: [
+          { label: 'Nombre completo', value: (s.form.nombres + ' ' + s.form.apellidoPaterno + ' ' + s.form.apellidoMaterno).trim() },
+          { label: 'Fecha de nacimiento', value: s.form.fechaNacimiento },
+          { label: 'Género', value: s.form.genero },
+          { label: 'Estado de nacimiento', value: s.form.estadoNacimiento }
+        ] },
+        { title: 'CLAVES FISCALES', source: 'VALIDADO', rows: [
+          { label: 'CURP', value: s.form.curp },
+          { label: 'RFC', value: s.form.rfc }
+        ] },
+        { title: 'DOMICILIO', source: 'CP VALIDADO', rows: [
+          { label: 'Calle y número', value: s.form.calle + ' ' + s.form.numeroExterior + (s.form.numeroInterior ? ', int. ' + s.form.numeroInterior : '') },
+          { label: 'Colonia', value: s.form.colonia },
+          { label: 'Municipio / Ciudad', value: s.form.municipio + ', ' + s.form.ciudad },
+          { label: 'Estado y C.P.', value: s.form.estado + ' · ' + s.form.codigoPostal }
+        ] },
+        { title: 'CONTACTO E INGRESO', source: 'OTP VERIFICADO', rows: [
+          { label: 'Celular', value: s.form.celular },
+          { label: 'Email', value: s.form.email },
+          { label: 'Ingreso mensual', value: s.form.ingreso }
+        ] }
+      ].map(g => ({
+        title: g.title, source: g.source,
+        chipStyle: 'padding:4px 8px;border-radius:99px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.08em;color:#00695C;background:#B2DFDB',
+        rows: g.rows.map((r, i, arr) => ({
+          label: r.label, value: r.value,
+          rowStyle: 'display:flex;align-items:baseline;gap:12px;padding:12px 0;' + (i < arr.length - 1 ? 'border-bottom:1px solid #EDEFF3' : '')
+        }))
+      })),
+
+      bureaus: [
+        { code: 'BC', name: 'Buró de crédito', desc: 'Historial y comportamiento de pago', iconStyle: 'width:44px;height:44px;border-radius:13px;flex:none;text-align:center;font:700 15px/44px \'Inter\',sans-serif;color:#fff;background:#0D47A1' },
+        { code: 'CC', name: 'Círculo de crédito', desc: 'Deuda vigente y capacidad de pago', iconStyle: 'width:44px;height:44px;border-radius:13px;flex:none;text-align:center;font:700 15px/44px \'Inter\',sans-serif;color:#fff;background:#00695C' }
+      ],
+      toggleConsent: () => this.setState({ consent: !s.consent }),
+      consentBoxStyle: 'margin-top:18px;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-radius:16px;cursor:pointer;background:' + (s.consent ? '#D6E4FF' : '#fff') + ';border:1px solid ' + (s.consent ? '#0D47A1' : '#E0E0E0'),
+      consentTickStyle: 'width:22px;height:22px;border-radius:7px;flex:none;text-align:center;font:700 12px/22px \'Inter\',sans-serif;background:' + (s.consent ? '#0D47A1' : '#F0F1F4') + ';color:' + (s.consent ? '#fff' : 'transparent'),
+      consentCtaStyle: 'margin-top:18px;' + cta(!!(s.acc && s.acc.privacy && s.acc.bureau)),
+
+      analysisSteps: ['Verificando tu identidad', 'Consultando buró de crédito', 'Consultando círculo de crédito', 'Calculando tu capacidad de pago'].map((label, i) => {
+        const done = s.astep > i, active = s.astep === i;
+        return {
+          label, mark: done ? '✓' : '',
+          style: 'display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:14px;background:' + (active ? 'rgba(255,255,255,.10)' : 'transparent') + ';border:1px solid ' + (active ? 'rgba(255,255,255,.16)' : 'transparent'),
+          dotStyle: 'width:24px;height:24px;border-radius:99px;flex:none;text-align:center;font:700 12px/24px \'Inter\',sans-serif;color:#fff;background:' + (done ? '#00B894' : 'rgba(255,255,255,.16)') + (active ? ';animation:kr-pulse 1.2s ease-in-out infinite' : ''),
+          textStyle: 'font:600 14px/1.3 \'Inter\',sans-serif;color:' + (done || active ? '#fff' : 'rgba(255,255,255,.42)')
+        };
+      }),
+
+      maxLabel: this.money(25000),
+      criteria: [
+        { label: 'Historial de pago', value: 'Sin atrasos' },
+        { label: 'Antigüedad crediticia', value: '7 años' },
+        { label: 'Deuda vs. ingreso', value: '18%' },
+        { label: 'Consultas recientes', value: '1 en 6 meses' }
+      ],
+
+      offers: P.map((o, i) => ({ o, i })).filter(x => x.o.for === prof).map(({ o, i }) => {
+        const on = i === s.product;
+        const cuota = this.money(o.max * (o.rate / 12) / (1 - Math.pow(1 + o.rate / 12, -o.terms[o.terms.length - 1])));
+        return {
+          name: o.name, desc: o.desc, badge: o.badge, segment: o.segment,
+          maxLabel: this.money(o.max),
+          footNote: o.key === 'DISTRIBUTOR_LINE' ? 'Ganas 20% de lo que cobres a tiempo' : (o.behavior === 'Revolvente' ? 'Solo pagas lo que dispones' : 'Desde ' + cuota + ' al mes'),
+          select: () => { if (o.ok) this.setState({ product: i, amount: Math.max(o.min, Math.min(this.state.amount, o.max)), term: o.terms.indexOf(this.state.term) < 0 ? o.terms[Math.floor(o.terms.length / 2)] : this.state.term }); },
+          cardStyle: 'flex:none;width:262px;min-height:250px;scroll-snap-align:center;display:flex;flex-direction:column;background:#fff;border-radius:22px;padding:18px;cursor:' + (o.ok ? 'pointer' : 'default') + ';opacity:' + (o.ok ? '1' : '.55') + ';border:' + (on ? '2px solid #0D47A1' : '1px solid #E0E0E0') + ';box-shadow:' + (on ? '0 12px 26px rgba(13,71,161,.16)' : '0 1px 3px rgba(26,28,30,.05)'),
+          iconStyle: 'width:44px;height:44px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;color:' + (on ? '#fff' : '#0D47A1') + ';background:' + (on ? '#0D47A1' : '#D6E4FF'),
+          segStyle: 'padding:5px 9px;border-radius:8px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.1em;flex:none;color:#44474E;background:#EDEFF3',
+          badgeStyle: 'margin-top:14px;align-self:flex-start;padding:6px 10px;border-radius:99px;font:600 9px/1 \'Inter\',sans-serif;letter-spacing:.09em;color:' + (o.badge === 'RECOMENDADO' ? '#00695C' : (o.badge === 'PASA A COMITÉ' ? '#8A5300' : (o.ok ? '#0D47A1' : '#9E9E9E'))) + ';background:' + (o.badge === 'RECOMENDADO' ? '#B2DFDB' : (o.badge === 'PASA A COMITÉ' ? '#FFECB3' : (o.ok ? '#D6E4FF' : '#EDEFF3')))
+        };
+      }),
+      offerDots: P.map((o, i) => ({ o, i })).filter(x => x.o.for === prof).map(({ i }) => ({ style: 'width:' + (i === s.product ? '18px' : '6px') + ';height:6px;border-radius:99px;transition:width .2s;background:' + (i === s.product ? '#0D47A1' : '#C9D0DC') })),
+      evalNoteStyle: 'margin-top:16px;background:#D6E4FF;border-radius:14px;padding:13px 15px;display:flex;gap:11px;align-items:flex-start',
+      evalNote: prof === 'dist'
+        ? 'Te dimos de alta como distribuidora, así que te evaluamos como negocio: capacidad de colocación, antigüedad y comportamiento de tu cartera. Estos son los productos de ese perfil.'
+        : 'Te dimos de alta para uso propio, así que te evaluamos por tu ingreso y tu historial personal. Estos son los productos de ese perfil.',
+      productSpecs: [
+        { label: 'Tipo', value: p.behavior },
+        { label: 'Plazos', value: p.terms[0] + '–' + p.terms[p.terms.length - 1] },
+        { label: 'Pago', value: p.freq }
+      ],
+      productName: p.name, productShort: p.short, productMaxLabel: this.money(p.max), productUse: p.use,
+
+      howSteps: [
+        { num: '1', title: 'Elige monto y plazo', desc: 'Mueve el monto y ajusta las mensualidades: el pago se recalcula al momento.', lineStyle: 'width:2px;flex:1;min-height:26px;background:#E0E0E0' },
+        { num: '2', title: 'Firma con tu código', desc: 'Te llega un SMS de 6 dígitos. Ese código es tu firma electrónica.', lineStyle: 'width:2px;flex:1;min-height:26px;background:#E0E0E0' },
+        { num: '3', title: 'Recibe tu dinero', desc: 'Depositamos a tu cuenta en menos de 24 horas hábiles.', lineStyle: 'width:0' }
+      ],
+
+      amount: c.amt, minAmount: p.min, maxAmount: p.max, term: s.term,
+      amountLabel: this.money(c.amt), minLabel: this.money(p.min),
+      pagoLabel: this.money(c.pago), totalLabel: this.money(c.total), interesLabel: this.money(c.interes),
+      onAmount: (e) => this.setState({ amount: Number(e.target.value) }),
+      termUp: () => this.setState({ term: TERMS[Math.min(TERMS.length - 1, ti + 1)] }),
+      termDown: () => this.setState({ term: TERMS[Math.max(0, ti - 1)] }),
+      termUpStyle: stepper(ti < TERMS.length - 1),
+      termDownStyle: stepper(ti > 0),
+      termDots: TERMS.map((t, i) => ({ style: 'width:' + (i === ti ? '22px' : '7px') + ';height:7px;border-radius:99px;transition:width .2s;background:' + (i === ti ? '#0D47A1' : '#DDE1E8') })),
+
+      summaryRows: [
+        { label: 'Producto', value: p.name }, { label: 'Monto', value: this.money(c.amt) },
+        { label: 'Plazo', value: s.term + ' mensualidades' }, { label: 'Pago mensual', value: this.money(c.pago) },
+        { label: 'Intereses incluidos', value: this.money(c.interes) }, { label: 'Total a pagar', value: this.money(c.total) }
+      ].map((r, i, arr) => ({
+        label: r.label, value: r.value,
+        style: 'display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;' + (i < arr.length - 1 ? 'border-bottom:1px solid #EDEFF3' : ''),
+        valueStyle: 'font:700 ' + (i >= 3 ? '16px' : '14px') + '/1.2 \'Inter\',sans-serif;color:' + (i === 5 ? '#0D47A1' : '#1A1C1E')
+      })),
+      depositTabs: ['Ya tengo cuenta', 'No tengo cuenta'].map((label, i) => ({
+        label, go: () => this.setState({ hasAccount: i === 0 }),
+        style: 'flex:1;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:600 12px/1 \'Inter\',sans-serif;cursor:pointer;color:' + ((s.hasAccount ? 0 : 1) === i ? '#0D47A1' : '#7A8296') + ';background:' + ((s.hasAccount ? 0 : 1) === i ? '#fff' : 'transparent') + ';box-shadow:' + ((s.hasAccount ? 0 : 1) === i ? '0 1px 3px rgba(26,28,30,.10)' : 'none')
+      })),
+      hasAccount: s.hasAccount, noAccount: !s.hasAccount,
+      clabe: s.clabe,
+      onClabe: (e) => this.setState({ clabe: e.target.value.replace(/[^0-9 ]/g, '').slice(0, 22) }),
+      clabeInputStyle: 'height:48px;border-radius:12px;border:1px solid ' + (s.clabe.replace(/\D/g, '').length === 18 ? '#00695C' : '#E0E0E0') + ';background:#fff;padding:0 14px;font:600 15px/1 \'Inter\',sans-serif;letter-spacing:.06em;color:#1A1C1E;outline:none;width:100%;box-sizing:border-box',
+      clabeHint: s.clabe.replace(/\D/g, '').length === 18 ? 'CLABE válida · BBVA México' : 'Te la damos de alta a tu nombre; validamos que la titularidad coincida con tu CURP.',
+      clabeHintColor: s.clabe.replace(/\D/g, '').length === 18 ? '#00695C' : '#9E9E9E',
+
+      toggleTerms: () => this.setState({ terms: !s.terms }),
+      termsBoxStyle: 'margin-top:14px;display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border-radius:16px;cursor:pointer;background:' + (s.terms ? '#D6E4FF' : '#fff') + ';border:1px solid ' + (s.terms ? '#0D47A1' : '#E0E0E0'),
+      termsTickStyle: 'width:22px;height:22px;border-radius:7px;flex:none;text-align:center;font:700 12px/22px \'Inter\',sans-serif;background:' + (s.terms ? '#0D47A1' : '#F0F1F4') + ';color:' + (s.terms ? '#fff' : 'transparent'),
+      summaryCtaStyle: cta(s.terms),
+
+      otpBoxes: [0, 1, 2, 3, 4, 5].map(i => ({
+        char: s.otp[i] || '',
+        style: 'flex:1;height:62px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:700 24px/1 \'Inter\',sans-serif;background:#fff;border:2px solid ' + (s.otp.length === i ? '#0D47A1' : '#E0E0E0')
+      })),
+      keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'].map(label => ({
+        label,
+        style: 'height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font:600 22px/1 \'Inter\',sans-serif;cursor:' + (label ? 'pointer' : 'default') + ';background:' + (label ? '#fff' : 'transparent') + ';border:1px solid ' + (label ? '#E0E0E0' : 'transparent'),
+        press: () => {
+          if (!label) return;
+          if (label === '⌫') return this.setState({ otp: s.otp.slice(0, -1) });
+          const otp = (s.otp + label).slice(0, 6);
+          this.setState({ otp });
+          if (otp.length === 6) setTimeout(() => this.go(12), 380);
+        }
+      })),
+
+      doneRows: [
+        { label: 'Primer pago', value: '5 de septiembre' },
+        { label: 'Pago mensual', value: this.money(c.pago) },
+        { label: 'Total a pagar', value: this.money(c.total) }
+      ],
+
+      counterTips: [
+        { text: 'Baja el uso de tus tarjetas por debajo del 30% de su límite.' },
+        { text: 'Mantén tres meses seguidos sin atrasos en ningún crédito.' },
+        { text: 'Evita solicitar crédito nuevo en los próximos 60 días.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

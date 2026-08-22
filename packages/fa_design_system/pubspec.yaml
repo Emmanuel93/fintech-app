@@ -1,0 +1,40 @@
+name: fa_design_system
+description: "Fintech App Design System — tokens, componentes y temas (Material Design 3)."
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  gap: ^3.0.1
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Inter embebida (no `google_fonts`): el prototipo pide Inter 400–800 y la
+  # descarga en runtime hacía que el primer arranque —o cualquier arranque sin
+  # red— renderizara con Roboto/SF y todo el journey se viera "casi pero no".
+  # Los pesos son exactamente los que declara el diseño (Journey L14).
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-ExtraBold.ttf
+          weight: 800

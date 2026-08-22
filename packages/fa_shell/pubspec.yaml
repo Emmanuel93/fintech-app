@@ -1,0 +1,67 @@
+name: fa_shell
+description: "Fintech App Shell — ensambla todos los módulos fa_* en la app final."
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fa_core:
+    path: ../fa_core
+  fa_design_system:
+    path: ../fa_design_system
+  fa_auth:
+    path: ../fa_auth
+  fa_onboarding:
+    path: ../fa_onboarding
+  fa_wallet:
+    path: ../fa_wallet
+  fa_credit:
+    path: ../fa_credit
+  fa_placements:
+    path: ../fa_placements
+  fa_notifications:
+    path: ../fa_notifications
+  fa_profile:
+    path: ../fa_profile
+  provider: ^6.1.2
+  nested: ^1.0.0
+  go_router: ^14.3.0
+  dio: ^5.7.0
+  intl: ^0.20.2
+  gap: ^3.0.1
+  cupertino_icons: ^1.0.8
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  http: ^1.2.0
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.3
+
+flutter:
+  uses-material-design: true
+
+# Ícono de app (este shell solo tiene proyecto iOS) con el isotipo K del handoff.
+# Generar: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/brand/icon/ios-appstore-1024.png"
+  android: false
+  ios: true
+  remove_alpha_ios: true
+
+# Splash nativo del SO: marca blanca centrada sobre azul primario.
+# Generar: dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#0D47A1"
+  image: "assets/brand/icon/splash-mark-white-1024.png"
+  android: false
+  web: false
