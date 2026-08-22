@@ -4,6 +4,10 @@
 
 1. [Visión General](#1-visión-general)
 2. [Arquitectura y Desacoplamiento](#2-arquitectura-y-desacoplamiento)
+   - [2.0 Microfrontends en una app móvil](#20-microfrontends-en-una-app-móvil)
+   - [2.1 Principio Fundamental](#21-principio-fundamental)
+   - [2.2 Flujo de datos en un módulo](#22-flujo-de-datos-en-un-módulo)
+   - [2.3 Desacoplamiento entre módulos](#23-desacoplamiento-entre-módulos)
 3. [Mapa de Dependencias](#3-mapa-de-dependencias)
 4. [Contratos Clave: Cómo se Desacoplan los Módulos](#4-contratos-clave-cómo-se-desacoplan-los-módulos)
 5. [Sistema de Mocks e Interceptores](#5-sistema-de-mocks-e-interceptores)
@@ -28,7 +32,31 @@
 
 ## 1. Visión General
 
-Fintech App es un **monorepo Flutter gestionado con Melos**, que implementa un sistema de **microfrontends móviles**: nueve paquetes Dart/Flutter independientes donde cada uno representa un dominio de negocio y puede ser **publicado en pub.dev**, vendido como librería o integrado individualmente en cualquier app Flutter.
+Fintech App es un **monorepo Flutter gestionado con Melos** que aplica el patrón
+de **microfrontends** a una app móvil: diez paquetes Dart/Flutter independientes
+—siete de dominio, dos de plataforma y el shell que los ensambla— donde cada uno
+se prueba solo, se versiona solo y puede **publicarse en pub.dev**, venderse como
+librería o integrarse en otra app Flutter.
+
+Qué significa eso en concreto, y qué no, está en
+[2.0 Microfrontends en una app móvil](#20-microfrontends-en-una-app-móvil).
+
+### Los diez paquetes
+
+Cada uno tiene su propio README con su contrato, sus rutas y sus decisiones.
+
+| Paquete | Qué es | Rutas | Home |
+|---|---|---|---|
+| [`fa_core`](packages/fa_core/README.md) | El contrato: `IModule`, `ApiClient`, `AppSession` | — | — |
+| [`fa_design_system`](packages/fa_design_system/README.md) | Tokens, `DsScale` y ~35 componentes | — | — |
+| [`fa_auth`](packages/fa_auth/README.md) | Splash, login y sesión | `/splash`, `/login` | — |
+| [`fa_onboarding`](packages/fa_onboarding/README.md) | El alta: OTP, OCR de INE, análisis | `/onboarding/*` | — |
+| [`fa_credit`](packages/fa_credit/README.md) | Catálogo, contratación y vida del crédito | `/credit/*` | tarjeta (20) |
+| [`fa_placements`](packages/fa_placements/README.md) | Colocación B2B2C | `/placements/*` | tarjeta (10) + 2 tabs |
+| [`fa_wallet`](packages/fa_wallet/README.md) | Saldo, movimientos y envíos | `/wallet/*` | tab |
+| [`fa_notifications`](packages/fa_notifications/README.md) | Bandeja y no leídas | `/notifications` | badge |
+| [`fa_profile`](packages/fa_profile/README.md) | El expediente, en consulta | `/profile` | — |
+| [`fa_shell`](packages/fa_shell/README.md) | La app: ensambla, rutea y no conoce a nadie | — | — |
 
 ```
 fintech-app/
@@ -106,6 +134,73 @@ El `prospectId` se comparte entre módulos vía `AppSession` (`fa_core`).
 ---
 
 ## 2. Arquitectura y Desacoplamiento
+
+### 2.0 Microfrontends en una app móvil
+
+La palabra viene del web, donde un microfrontend es un fragmento que se compila,
+despliega y versiona por separado y que el contenedor descubre en tiempo de
+ejecución. En una app móvil eso último no existe: **todo se compila en un solo
+binario** y no hay Module Federation que resuelva nada en caliente. Lo que sí se
+puede conservar —y es lo que aquí se conserva— son las tres propiedades que
+hacen útil el patrón.
+
+| Propiedad | Cómo se logra aquí |
+|---|---|
+| **Autonomía** | Cada módulo es un paquete Dart publicable, con su dominio, sus casos de uso, sus mocks y sus pruebas. Se le hace `flutter test` solo. |
+| **Contrato explícito** | `IModule`. Un módulo aparece en la app declarando rutas, providers, tabs y tarjeta; jamás lo referencia otro módulo. |
+| **Reemplazabilidad** | Quitar un módulo del `ShellInjection` deja la app compilando, sin esa funcionalidad y entera. |
+
+El precio de no tener federación es que **el ensamblado ocurre en tiempo de
+compilación**, en un solo archivo. La ganancia es que el contrato se verifica con
+el analizador, no en producción: si un módulo deja de cumplir `IModule`, no
+compila.
+
+#### Las tres reglas que sostienen el patrón
+
+**1. El shell no conoce a nadie.** `ShellInjection` es el único archivo del
+repositorio que importa los `fa_*`, y sólo para instanciarlos y guardarlos como
+`IModule`. A partir de ahí el shell habla con la interfaz.
+
+**2. Ningún módulo importa a otro módulo.** La única excepción es
+`fa_credit → fa_wallet`, y es una dependencia del negocio, no un atajo: el
+desembolso aterriza en la cuenta y el pago sale de ella.
+
+**3. Lo que dos módulos necesitan saber, lo publica el shell.** Ni `fa_credit`
+ni `fa_placements` se conocen, pero ambos necesitan saber si el titular tiene
+línea de colocación. Ese hecho vive en `AppSession`, en `fa_core`: uno lo
+escribe, el otro lo lee, ninguno sabe del otro.
+
+#### Cómo se compone una pantalla entre varios módulos
+
+El home es el caso interesante, porque **no lo escribe nadie**. El shell pinta el
+saludo y el nav; el contenido lo aportan los módulos y él sólo lo apila en el
+orden que cada uno declara:
+
+```
+┌─ DsBrandBar ──────────────── fa_shell, sobre todas las pantallas
+│  avatar (fa_profile)  ·  logo  ·  campana (fa_notifications → badge)
+├─ "Hola, Emmanuel" ────────── fa_shell
+├─ MI LÍNEA DE DISTRIBUIDOR ── fa_placements   homeCardOrder = 10
+├─ MIS CRÉDITOS ───────────── fa_credit       homeCardOrder = 20
+├─ Oportunidades ──────────── fa_credit       (dentro de su misma card)
+└─ nav: Inicio · Movimientos · Colocaciones · Beneficiarios
+        └ fa_shell   fa_wallet    fa_placements (ambos, si hay línea)
+```
+
+`homeCardOrder` no es cosmético: es **prelación**. Primero el dinero del que el
+titular responde frente a Kredius, después el que tomó para sí, al final lo que
+se le ofrece. Antes ese orden lo daba el renglón en que cada módulo quedaba en
+`ShellInjection` —moverlo cambiaba la jerarquía en silencio—; ahora lo declara el
+módulo y lo fija una prueba.
+
+#### Qué no se puede hacer, y por qué está bien
+
+- **Desplegar un módulo sin recompilar la app.** No hay forma en móvil sin un
+  intérprete embebido, y eso trae más problemas de los que resuelve.
+- **Que dos módulos usen versiones distintas de `fa_core`.** El monorepo los
+  resuelve por `path`; al publicarlos en pub.dev cada uno declara su rango.
+- **Equipos desplegando por separado.** Pueden desarrollar y probar por separado
+  —que es donde está el 90 % del beneficio—, pero la app sale en un solo tren.
 
 ### 2.1 Principio Fundamental
 
@@ -1370,6 +1465,18 @@ El módulo ya está integrado. GoRouter recolecta sus rutas automáticamente via
 fintech-app/
 ├── melos.yaml                          ← configuración del monorepo
 ├── pubspec.yaml                        ← dependencias de desarrollo (melos)
+├── .gitignore                          ← deja fuera caches, Pods y evidencias/
+│
+├── docs/                               ← documentación viva del proyecto
+│   ├── design/                         ← la especificación de la interfaz
+│   │   ├── Kredius Journey App.dc.html ← prototipo: 186 comentarios lo citan
+│   │   └── README.md                   ← dónde está cada pantalla, por línea
+│   ├── KREDIUS_E2E_VIDEOS.md           ← cómo regrabar los cinco recorridos
+│   ├── KREDIUS_COLOCACION_API.md       ← contrato congelado del B2B2C
+│   └── …
+│
+├── evidencias/                         ← videos de los E2E (NO se versiona)
+│
 └── packages/
     │
     ├── fa_core/                        ← CONTRATOS BASE (sin dependencias Flutter)
@@ -1379,10 +1486,16 @@ fintech-app/
     │           ├── config/
     │           │   └── app_config.dart ← AppFlavor, AppConfig.setup()
     │           ├── contracts/
-    │           │   ├── i_module.dart   ← interfaz IModule
+    │           │   ├── i_module.dart   ← interfaz IModule + HomeTab
     │           │   └── navigation_callbacks.dart
-    │           └── network/
-    │               └── api_client.dart ← interfaz ApiClient
+    │           ├── network/
+    │           │   └── api_client.dart ← interfaz ApiClient
+    │           ├── presentation/
+    │           │   ├── safe_notifier.dart ← no avisar tras destruirse
+    │           │   └── nombres.dart    ← comoNombrePropio
+    │           └── session/
+    │               ├── app_session.dart   ← los hechos de nadie
+    │               └── credit_purpose.dart
     │
     ├── fa_design_system/               ← UI KIT
     │   └── lib/
