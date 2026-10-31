@@ -29,6 +29,17 @@ void handoff(String clave, String valor) {
   print('##HANDOFF## $clave=$valor');
 }
 
+/// Marca el inicio de un momento de la historia del video comercial.
+///
+/// El orquestador lee estas líneas mientras el test corre y anota cuándo ocurrió cada una
+/// respecto al inicio de la grabación; con eso el panel del video ilumina el paso correcto en el
+/// momento correcto. Las claves son fijas por acto y el texto que ve el cliente vive en
+/// `une-video.sh`, no aquí: el copy se ajusta sin tocar las pruebas.
+void historia(String clave) {
+  // ignore: avoid_print
+  print('##HISTORIA## $clave');
+}
+
 void paso(String mensaje) {
   // ignore: avoid_print
   print('[RE2E] $mensaje');
@@ -102,6 +113,40 @@ Future<void> pagar(String token, double monto) async {
     body: jsonEncode({'amount': monto}),
   );
   if (r.statusCode >= 300) throw StateError('pago HTTP ${r.statusCode}: ${r.body}');
+}
+
+/// El adeudo cuando deja de moverse: dos lecturas iguales con 4 s de diferencia (tope 2 min).
+///
+/// Los días de devengo que adelanta el reloj de prueba llegan a cartera por Kafka uno a uno; con
+/// las JVM en frío entran a ~1 por segundo. Pagar el adeudo leído a mitad de esa fila deja
+/// remanente y la cuenta no se liquida —la corrida del 2026-10-31 quedó ACTIVE tras pagar—.
+Future<double> adeudoEstable(String token) async {
+  double? previo;
+  double actual = 0;
+  for (var i = 0; i < 30; i++) {
+    final cuenta = await cuentaDeCredito(token);
+    actual = (cuenta?['totalDebt'] as num?)?.toDouble() ?? 0;
+    if (previo != null && (actual - previo).abs() < 0.005) return actual;
+    previo = actual;
+    await Future<void>.delayed(const Duration(seconds: 4));
+  }
+  return actual;
+}
+
+/// Paga la cuenta hasta dejarla en cero, por el canal de la app, y devuelve cuánto se pagó.
+///
+/// Se paga lo que se debe cuando el devengo ya terminó de llegar, y se vuelve a leer por si algo
+/// entró después: el pago tampoco es instantáneo en cartera.
+Future<double> liquidar(String token) async {
+  var pagado = 0.0;
+  for (var intento = 0; intento < 5; intento++) {
+    final deuda = await adeudoEstable(token);
+    if (deuda <= 0.009) break;
+    await pagar(token, deuda);
+    pagado += deuda;
+    paso('Pago ${intento + 1} por el canal de la app: \$${deuda.toStringAsFixed(2)}');
+  }
+  return pagado;
 }
 
 /// Empuja los datos de identificación del journey a stdout.

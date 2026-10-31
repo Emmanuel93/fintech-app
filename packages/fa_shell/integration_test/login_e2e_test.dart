@@ -71,7 +71,7 @@ void main() {
 
       // Home visible: la tarjeta de bienvenida o el CTA de crédito
       expect(
-        find.textContaining('Emmanuel').evaluate().isNotEmpty ||
+        find.textContaining('Laura').evaluate().isNotEmpty ||
             find.text('Solicitar crédito').evaluate().isNotEmpty ||
             find.text('Solicita tu crédito').evaluate().isNotEmpty ||
             find.text('Mi Crédito Revolvente').evaluate().isNotEmpty,

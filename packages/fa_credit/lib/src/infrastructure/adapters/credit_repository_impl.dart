@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:fa_core/fa_core.dart';
+import '../../domain/entities/identity_not_verified.dart';
 import '../../domain/entities/credit_account.dart';
 import '../../domain/entities/credit_product.dart';
 import '../../domain/entities/credit_application.dart';
@@ -82,13 +84,17 @@ class CreditRepositoryImpl implements ICreditRepository {
     double? requestedAmount,
     int? requestedTerm,
   }) async {
-    final json = await _client.post("/credit/applications", body: {
-      'prospectId': prospectId,
-      'productType': productType,
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
-      if (requestedTerm != null) 'requestedTerm': requestedTerm,
-    });
-    return CreditApplicationDto.fromJson(json).toDomain();
+    try {
+      final json = await _client.post("/credit/applications", body: {
+        'prospectId': prospectId,
+        'productType': productType,
+        if (requestedAmount != null) 'requestedAmount': requestedAmount,
+        if (requestedTerm != null) 'requestedTerm': requestedTerm,
+      });
+      return CreditApplicationDto.fromJson(json).toDomain();
+    } on DioException catch (e) {
+      throw identityGateOf(e) ?? e;
+    }
   }
 
   @override
@@ -138,4 +144,20 @@ class CreditRepositoryImpl implements ICreditRepository {
       return false;
     }
   }
+}
+
+/// El 422 de la compuerta de identidad, si es eso lo que respondió el BFF.
+///
+/// Se reconoce por el `type` del ProblemDetail, no por el código: un 422 puede
+/// ser también un periodo de espera o un monto fuera de rango, y a cada uno se
+/// le dice algo distinto.
+IdentityNotVerified? identityGateOf(DioException e) {
+  final data = e.response?.data;
+  if (e.response?.statusCode != 422 || data is! Map) return null;
+  final type = data['type']?.toString() ?? '';
+  if (!type.endsWith('ORIGINATION_PERSON_NOT_VERIFIED')) return null;
+  return IdentityNotVerified(
+    identityStatus: data['identityStatus']?.toString(),
+    screeningStatus: data['screeningStatus']?.toString(),
+  );
 }

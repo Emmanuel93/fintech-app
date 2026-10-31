@@ -54,6 +54,7 @@ void main() {
     expect(find.text('Tu solicitud está en revisión'), findsNothing,
         reason: 'ya no está en revisión: el analista decidió');
     paso('🎬 CHECKPOINT — MI LÍNEA DE DISTRIBUIDOR, aprobada desde la consola');
+    historia('linea');
 
     // Aquí sí aplica: el nav pierde «Oportunidades» cuando hay línea de colocación viva
     // (home_screen.dart, mismo criterio que home_nav_test.dart). En el alta todavía no la hay,
@@ -68,6 +69,7 @@ void main() {
     paso('🎬 CHECKPOINT — pestaña Colocaciones');
     await tester.respira();
 
+    historia('clienta');
     await tester.scrollAndTap(find.text('Enviar préstamo'));
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -97,8 +99,10 @@ void main() {
     await tester.scrollAndTap(find.text('Continuar'));
     await tester.pumpAndSettle(const Duration(seconds: 2));
     paso('🎬 CHECKPOINT — monto, plazo y bonificación');
+    historia('monto');
     await tester.respira(const Duration(seconds: 3));
 
+    historia('liga');
     await tester.scrollAndTap(find.text('Enviarle la liga por WhatsApp'));
     await tester.pumpAndSettle(const Duration(seconds: 4));
     expect(find.text('Le mandamos la liga'), findsOneWidget,
@@ -119,6 +123,8 @@ void main() {
       final id = p['placementId'] ?? p['id'];
       if (id != null) handoff('PLACEMENT_ID', '$id');
       handoff('BENEFICIARIA_TEL', telBeneficiaria);
+      // El nombre lo necesitan la web de alta y la mesa de KYC para encontrarla.
+      handoff('BENEFICIARIA_NOMBRE', nombreBeneficiaria);
       paso('Colocación $id · beneficiaria $telBeneficiaria · estado ${p['status']}');
     } else {
       paso('⚠️ el BFF no devolvió colocaciones');

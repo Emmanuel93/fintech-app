@@ -27,6 +27,7 @@ import 'src/presentation/screens/credits_list_screen.dart';
 import 'src/presentation/screens/product_selection_screen.dart';
 import 'src/presentation/screens/application_amount_screen.dart';
 import 'src/presentation/screens/application_status_screen.dart';
+import 'src/presentation/screens/identity_review_screen.dart';
 import 'src/presentation/screens/offer_screen.dart';
 import 'src/presentation/screens/contract_sign_screen.dart';
 import 'src/presentation/screens/contract_otp_screen.dart';
@@ -143,6 +144,10 @@ class CreditModule extends IModule {
           builder: (_, __) => const OfferScreen(),
         ),
         GoRoute(
+          path: '/credit/apply/identity',
+          builder: (_, __) => const IdentityReviewScreen(),
+        ),
+        GoRoute(
           path: '/credit/apply/rejected',
           builder: (_, __) => const RejectedScreen(),
         ),
@@ -233,9 +238,21 @@ class CreditModule extends IModule {
     final enComite =
         application.isPendingReview && !AppSession.instance.hasDistributorLine;
 
+    // La solicitud se intentó y no se recibió porque la identidad sigue en
+    // verificación. Va antes que «en revisión»: lo que espera no es a un
+    // comité, es a que alguien confirme quién es.
+    final esperaIdentidad =
+        application.identityHold != null && !application.identityHold!.isFinal;
+
     final Widget creditBlock;
     if (!provider.loaded) {
       creditBlock = const _CreditCardSkeleton();
+    } else if (credit == null && esperaIdentidad) {
+      creditBlock = const DsEmptyStateCard(
+        icon: Icons.hourglass_top_rounded,
+        title: 'Estamos verificando tu identidad',
+        message: 'Cuando terminemos te avisamos y podrás enviar tu solicitud.',
+      );
     } else if (credit == null && enComite) {
       // Nada aprobado pero sí productos en comité — el caso del distribuidor.
       // Se dice en qué va, en vez del vacío genérico.

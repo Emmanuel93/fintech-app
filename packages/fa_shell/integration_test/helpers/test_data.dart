@@ -13,16 +13,17 @@ class TestData {
   static const password = 'SecurePass1!'; // ≥8 chars, mayúscula, número, símbolo
 
   // ── Identidad (de OnboardingAcceptanceTest.kycPayload) ─────────────────
-  static const curp = 'RAHE930326HSMLRM09';
-  static const rfc = 'RAHE930326XXX';
-  static const nombres = 'EMMANUEL';
-  static const apellidoPaterno = 'RAMÍREZ';
-  static const apellidoMaterno = 'HERNÁNDEZ';
+  static const curp = 'MESL930326MSLNTR04';
+  static const rfc = 'MESL930326XXX';
+  static const nombres = 'LAURA';
+  static const apellidoPaterno = 'MÉNDEZ';
+  static const apellidoMaterno = 'SOTO';
   // Etiqueta del selector. El código que viaja al BFF es 'H' (estándar CURP).
-  static const genero = 'Hombre';
-  // Usamos estados que aparecen en los primeros ítems de la lista (a-z)
-  // para evitar scroll dentro del dropdown durante los tests.
-  static const estadoNacimiento = 'Aguascalientes';
+  static const genero = 'Mujer';
+  // Sinaloa, como el domicilio: Culiacán y el CP 80060 son de ahí. Antes se usaban estados del
+  // principio de la lista porque los del final no se alcanzaban en el selector; eso ya se arregló
+  // (states_dropdown_check_test) y `selectDropdown` usa el buscador cuando la opción no está a la vista.
+  static const estadoNacimiento = 'Sinaloa';
   static const email = 'test@fintech.mx';
 
   // ── Domicilio ───────────────────────────────────────────────────────────
@@ -32,7 +33,7 @@ class TestData {
   static const municipio = 'Culiacán';
   static const ciudad = 'Culiacán';
   static const cp = '80060';
-  static const estadoDomicilio = 'Baja California';
+  static const estadoDomicilio = 'Sinaloa';
 
   // ── Fecha de nacimiento: 1993-03-26 ────────────────────────────────────
   static const fechaNacimientoDia = '26';
@@ -67,7 +68,7 @@ class TestData {
     const alnum = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
     final bloque =
         List.generate(5, (_) => letras[azar.nextInt(letras.length)]).join();
-    return 'RAHE930326H$bloque'
+    return 'MESL930326M$bloque'
         '${alnum[azar.nextInt(alnum.length)]}'
         '${azar.nextInt(10)}';
   }

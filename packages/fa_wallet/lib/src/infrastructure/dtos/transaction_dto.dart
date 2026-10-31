@@ -33,7 +33,7 @@ class TransactionDto {
         category: _parseCat(category),
         description: description,
         amount: amount,
-        date: DateTime.parse(date),
+        date: DateTime.parse(date).toLocal(),
         merchant: merchant,
         reference: reference,
       );

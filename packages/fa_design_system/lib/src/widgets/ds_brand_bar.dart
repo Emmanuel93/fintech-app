@@ -53,7 +53,7 @@ class DsBrandBar extends StatelessWidget {
   /// borde físico, `topGapBand` = 112), no se reserva desde aquí.
   static const double designHeight = 38;
 
-  /// "Emmanuel Hernández" → "EH"; "Emmanuel" → "EM"; vacío → "—".
+  /// "Laura Méndez" → "LM"; "Laura" → "LA"; vacío → "—".
   static String initialsOf(String name) {
     final parts =
         name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();

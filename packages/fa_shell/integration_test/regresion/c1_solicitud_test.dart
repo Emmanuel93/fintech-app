@@ -1,4 +1,10 @@
-/// CASO 1 · ACTO 1 — alta de un cliente de uso propio y solicitud que cae en revisión manual.
+/// CASO 1 · ACTO 1 — alta de un cliente de uso propio y primer intento de solicitud.
+///
+/// Sin proveedor biométrico conectado, toda identidad queda en revisión hasta que una persona la
+/// confirma en la mesa de cumplimiento, y mientras tanto origination no recibe solicitudes. Este
+/// acto comprueba que la app lo dice como es —«Estamos verificando tu identidad»— y no con un
+/// «no pudimos enviar tu solicitud». La solicitud se reenvía en `c1_reenvio_test.dart`, después
+/// del dictamen.
 ///
 /// Precondición que pone el orquestador: la banda BAJO de la política de `PERSONAL_LOAN` está
 /// elevada, así que el motor devuelve MANUAL_REVIEW para cualquier solicitante. No es un mock:
@@ -8,7 +14,7 @@
 /// home con el estado en revisión. El catálogo se alcanza por la pestaña **Oportunidades** del
 /// bottom nav, donde el producto aparece bajo «PUEDES SOLICITARLAS».
 ///
-/// Termina imprimiendo los identificadores del journey para el siguiente acto.
+/// Termina imprimiendo los identificadores del journey para los siguientes actos.
 ///
 ///   flutter test integration_test/regresion/c1_solicitud_test.dart -d <device>
 library;
@@ -23,6 +29,7 @@ import '../helpers/image_picker_mock.dart';
 import '../helpers/onboarding_steps.dart';
 import '../helpers/test_data.dart';
 import '../helpers/test_helpers.dart';
+import 'c1_pasos.dart';
 import 'gestos.dart';
 import 'soporte.dart';
 import 'package:fa_core/fa_core.dart';
@@ -45,7 +52,10 @@ void main() {
     };
 
     final phone = TestData.uniquePhone();
-    final curp = TestData.uniqueCurp();
+    // La CURP la fija el orquestador cuando trae documentos de muestra: es la que lleva el INE, y
+    // en la mesa de cumplimiento una persona compara una contra otra.
+    const curpDefinida = String.fromEnvironment('RE2E_CURP');
+    final curp = curpDefinida.isNotEmpty ? curpDefinida : TestData.uniqueCurp();
     const password = TestData.password;
     paso('Teléfono $phone · CURP $curp');
 
@@ -86,70 +96,32 @@ void main() {
     paso('CHECKPOINT — home en revisión');
     await tester.respira(const Duration(seconds: 3));
 
-    // ── Catálogo por la pestaña Oportunidades ───────────────────────────────
-    await tester.tap(find.text('Oportunidades'));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    final enCatalogo = await tester.pumpUntilFound(find.text('Tus oportunidades'),
-        maxTicks: 30, tick: const Duration(milliseconds: 500));
-    expect(enCatalogo, isTrue, reason: 'la pestaña Oportunidades abre el catálogo');
-    expect(find.text('PUEDES SOLICITARLAS'), findsOneWidget,
-        reason: 'el producto está sujeto a revisión, no aprobado de antemano');
-    paso('CHECKPOINT — catálogo con la sección PUEDES SOLICITARLAS');
-    await tester.respira(const Duration(seconds: 3));
+    // ── Primer intento: la compuerta de identidad ──────────────────────────
+    await solicitarPrestamoPersonal(tester);
 
-    // Las tarjetas viven en un carrusel **horizontal** (`_Section` →
-    // `ListView(scrollDirection: Axis.horizontal)`, product_selection_screen.dart:310-313), y
-    // con los seis productos B2C en «PUEDES SOLICITARLAS» el préstamo personal es la cuarta:
-    // nace fuera de pantalla por la derecha. `findScrolling` arrastra en vertical por defecto
-    // sobre `Scrollable.first` —la lista de secciones—, así que nunca lo traía.
-    final carrusel = find.byWidgetPredicate((w) =>
-        w is Scrollable &&
-        (w.axisDirection == AxisDirection.right ||
-            w.axisDirection == AxisDirection.left));
-    final producto = find.textContaining('Préstamo Personal');
-    final hay = await tester.findScrolling(
-      producto,
-      scrollable: carrusel.first,
-      delta: const Offset(-260, 0),
-    );
-    tester.volcarPantalla();
-    expect(hay, isTrue, reason: 'el catálogo real ofrece el préstamo personal');
-    await tester.ensureVisible(producto.first);
-    await tester.pumpAndSettle();
-    await tester.tap(producto.first, warnIfMissed: false);
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-
-    await tester.scrollAndTap(find.textContaining('Continuar con'));
-    await tester.pumpAndSettle(const Duration(seconds: 3));
-
-    // ── Configurador ────────────────────────────────────────────────────────
-    expect(find.text('MONTO DEL PRÉSTAMO'), findsOneWidget);
-    paso('CHECKPOINT — configurador de monto y plazo');
-    await tester.respira(const Duration(seconds: 3));
-
-    await tester.scrollAndTap(find.text('Revisar solicitud'));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-
-    // ── La resolución real: revisión humana ─────────────────────────────────
     final resultado = await tester.esperaCualquiera(
-      const ['Tu solicitud pasa a comité', 'SÍ CUMPLES LOS CRITERIOS', 'NO ALCANZASTE'],
-      maxTicks: 150,
+      const ['Estamos verificando tu identidad', 'Tu solicitud pasa a comité', 'No pudimos enviar'],
+      maxTicks: 60,
     );
     tester.volcarPantalla();
-    expect(resultado, 'Tu solicitud pasa a comité',
-        reason: 'la banda elevada debe mandar la solicitud a un analista, no aprobarla');
-    expect(find.textContaining('Un analista la va a revisar'), findsOneWidget);
-    paso('🎬 CHECKPOINT — la app dice que un analista la revisará');
+    expect(resultado, 'Estamos verificando tu identidad',
+        reason: 'con la identidad en revisión la solicitud no se recibe, y la app lo dice como es');
+    expect(find.textContaining('Un analista está revisando tus documentos'), findsOneWidget);
+    paso('🎬 CHECKPOINT — la app dice que está verificando la identidad');
     await tester.respira(const Duration(seconds: 4));
 
     // ── Handoff al orquestador ──────────────────────────────────────────────
-    await publicarIdentificadores(phone: phone, password: password);
+    // Todavía no hay solicitud: lo que necesita la mesa es la persona.
+    handoff('PHONE', phone);
+    handoff('PASSWORD', password);
+    handoff('PROSPECT_ID', AppSession.instance.prospectId);
+    handoff('CURP', curp);
 
     await tester.tapButton('Entendido');
     await tester.pumpAndSettle(const Duration(seconds: 2));
-    expect(find.text('Tu solicitud está en revisión'), findsOneWidget,
-        reason: 'de vuelta en el home, el estado sigue siendo el mismo');
-    paso('🎬 CHECKPOINT — home, a la espera del analista');
+    expect(find.text('Estamos verificando tu identidad'), findsOneWidget,
+        reason: 'de vuelta en el home, se sigue diciendo qué se espera');
+    paso('🎬 CHECKPOINT — home, a la espera de la verificación');
     await tester.respira(const Duration(seconds: 4));
   });
 }

@@ -53,15 +53,15 @@ class OnboardingMockInterceptor extends Interceptor {
 
   Map<String, dynamic> _ocrMock() => {
         'success': true,
-        'nombres': 'EMMANUEL FRANCISCO',
-        'apellidoPaterno': 'RAMÍREZ',
-        'apellidoMaterno': 'HERNÁNDEZ',
-        'curp': 'RAHE930326HSMLRM09',
+        'nombres': 'LAURA',
+        'apellidoPaterno': 'MÉNDEZ',
+        'apellidoMaterno': 'SOTO',
+        'curp': 'MESL930326MSLNTR04',
         'fechaNacimiento': '26/03/1993',
         'domicilio': 'COL. VILLA UNIVERSIDAD, CULIACÁN, SINALOA 80060',
         'clave': '9300326SL0001234',
         'vigencia': '2031',
-        'genero': 'H',
+        'genero': 'M',
         'estadoNacimiento': 'Sinaloa',
         'folio': 'IDMX${DateTime.now().millisecondsSinceEpoch.toString().substring(6)}',
       };

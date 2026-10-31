@@ -243,7 +243,7 @@ Finder _homeScreenFinder() => find.byWidgetPredicate((w) {
       return t.contains('Solicitar crédito') ||
           t.contains('Solicita tu crédito') ||
           t.contains('Mi Crédito Revolvente') ||
-          t.contains('Emmanuel') ||
+          t.contains('Laura') ||
           t.contains('Hola,');
     });
 

@@ -7,8 +7,8 @@ import 'package:fa_core/fa_core.dart';
 void main() {
   group('comoNombrePropio', () {
     test('baja las mayúsculas de la INE', () {
-      expect('EMMANUEL RAMÍREZ HERNÁNDEZ'.comoNombrePropio,
-          'Emmanuel Ramírez Hernández');
+      expect('LAURA MÉNDEZ SOTO'.comoNombrePropio,
+          'Laura Méndez Soto');
     });
 
     test('deja las partículas de los apellidos en minúscula', () {
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('no rompe con lo que ya viene bien escrito', () {
-      expect('Emmanuel Ramírez'.comoNombrePropio, 'Emmanuel Ramírez');
+      expect('Laura Méndez'.comoNombrePropio, 'Laura Méndez');
     });
 
     test('tolera espacios de más y cadenas vacías', () {

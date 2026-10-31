@@ -34,6 +34,7 @@ void main() {
     local_app.main();
     await tester.waitSplash();
 
+    historia('entra');
     await tester.tapButton('Ya tengo cuenta · Entrar');
     await tester.settle();
     await tester.enterField('CELULAR', rePhone);
@@ -63,6 +64,7 @@ void main() {
     // (`placements_module.dart:128`, `if (line == null) return null`). Es decir: una revolvente
     // se "cierra" por haberla pagado. En el desenlace de mora no se paga nada y la línea sigue
     // viva, así que ahí la tarjeta sí tiene que estar.
+    historia('linea');
     final conLinea = await tester.pumpUntilFound(find.text('MI LÍNEA DE DISTRIBUIDOR'),
         maxTicks: 30, tick: const Duration(milliseconds: 500));
     if (reDesenlace == 'mora') {
@@ -77,36 +79,26 @@ void main() {
 
     // El nav del distribuidor puede haberse replegado con la línea ya saldada: se toca la
     // pestaña sólo si sigue ahí, en vez de fallar por un tap sobre algo que no existe.
+    historia('desenlace');
     await tester.tapPrimeroQueExista(const ['Colocaciones']);
     await tester.pumpAndSettle(const Duration(seconds: 3));
     tester.volcarPantalla();
 
     if (reDesenlace == 'mora') {
+      // La tarjeta pinta «ATRASO N DÍAS» con el `daysPastDue` que ya trae cada colocación de
+      // `/placements` (plan §3.13). Antes llegaba en 0 y se veía «AL CORRIENTE» mientras cartera
+      // y cobranza la trataban como vencida; esta prueba lo registraba como hallazgo. Ya no: si
+      // la mora no se ve, es rojo.
       final marca = await tester.esperaCualquiera(
-        const ['EN MORA', 'días de atraso', 'venció el', 'Vencida', 'Atrasada'],
+        const ['ATRASO', 'EN MORA', 'días de atraso', 'venció el', 'Vencida', 'Atrasada'],
         maxTicks: 20,
       );
-      if (marca == null) {
-        // HALLAZGO: el mismo BFF contesta dos verdades distintas sobre la misma deuda. El
-        // resumen de la línea trae `daysPastDue` con el atraso real, pero cada colocación de
-        // `/placements` lo trae en 0 —sus métricas salen del calendario de la disposición
-        // (`PlacementOrchestrator.metricsOf`)—, y la tarjeta de Colocaciones pinta ese 0 como
-        // «AL CORRIENTE». Resultado: a la distribuidora se le dice que su colocación está al
-        // día mientras cartera y cobranza la tratan como vencida. El plan lo pide en el paso
-        // 3.13 y hoy no ocurre.
-        //
-        // Se afirma lo que sí es verdad —que la mora existe y el backend la conoce— para que
-        // esto no pueda pasar en verde si algún día dejara de haber mora de verdad.
-        final atraso = (resumen?['daysPastDue'] as num?)?.toInt() ?? 0;
-        expect(atraso, greaterThan(0),
-            reason: 'la mora tiene que existir en el backend; si no, el rojo es otro');
-        expect(find.text('AL CORRIENTE'), findsWidgets,
-            reason: 'la contradicción concreta: la colocación vencida se pinta al corriente');
-        paso('🎬 HALLAZGO — la línea reporta $atraso días de atraso pero la colocación se ve '
-            '«AL CORRIENTE»: /placements devuelve daysPastDue 0 (plan §3.13 no se cumple)');
-      } else {
-        paso('🎬 CHECKPOINT — colocación EN MORA en la app');
-      }
+      final atraso = (resumen?['daysPastDue'] as num?)?.toInt() ?? 0;
+      expect(atraso, greaterThan(0),
+          reason: 'la mora tiene que existir en el backend; si no, el rojo es otro');
+      expect(marca, isNotNull,
+          reason: 'la línea reporta $atraso días de atraso y la colocación no se ve vencida');
+      paso('🎬 CHECKPOINT — colocación con ATRASO de $atraso días en la app');
     } else {
       // HALLAZGO (continuación): saldada la línea, la app **deja de ser la de una
       // distribuidora**. El nav vuelve a Inicio/Movimientos/Oportunidades —sin «Colocaciones» ni

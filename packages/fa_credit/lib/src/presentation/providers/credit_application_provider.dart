@@ -11,6 +11,7 @@ import '../../application/use_cases/present_offer_use_case.dart';
 import '../../application/use_cases/accept_offer_use_case.dart';
 import '../../application/use_cases/generate_contract_use_case.dart';
 import '../../application/use_cases/sign_contract_use_case.dart';
+import '../../domain/entities/identity_not_verified.dart';
 import '../../domain/entities/credit_product.dart';
 import '../../domain/entities/credit_application.dart';
 import '../../domain/entities/prequalified_product.dart';
@@ -55,6 +56,11 @@ class CreditApplicationProvider extends ChangeNotifier with SafeNotifier {
   bool isSubmitting = false;
   bool isActing = false; // acciones de oferta/contrato en curso
   String? error;
+
+  /// La última solicitud no se recibió porque la identidad sigue sin
+  /// verificarse. Mientras esté puesta, el home lo dice en vez de mostrar el
+  /// catálogo como si nada hubiera pasado.
+  IdentityNotVerified? identityHold;
 
   // ── Catálogo ───────────────────────────────────────────────────────────
   Future<void> loadProducts() async {
@@ -193,7 +199,13 @@ class CreditApplicationProvider extends ChangeNotifier with SafeNotifier {
         requestedAmount: amount,
         requestedTerm: term,
       );
+      identityHold = null;
       return true;
+    } on IdentityNotVerified catch (e) {
+      // No es un error que la persona pueda arreglar reintentando: se dice qué
+      // pasa y la pantalla la lleva a su estado, sin snackbar.
+      identityHold = e;
+      return false;
     } catch (e, st) {
       // ignore: avoid_print
       print('[submit] EXCEPTION: $e\n$st');

@@ -14,14 +14,14 @@ Widget _app(Widget child) => MediaQuery(
 void main() {
   group('DsBrandBar', () {
     testWidgets('siempre lleva el isotipo y el wordmark', (tester) async {
-      await tester.pumpWidget(_app(const DsBrandBar(initials: 'EH')));
+      await tester.pumpWidget(_app(const DsBrandBar(initials: 'LM')));
       expect(find.byType(KrediusMark), findsOneWidget);
       expect(find.text('Kredius'), findsOneWidget);
     });
 
     testWidgets('fuera de la app esconde avatar y campana pero guarda su lugar',
         (tester) async {
-      await tester.pumpWidget(_app(const DsBrandBar(initials: 'EH')));
+      await tester.pumpWidget(_app(const DsBrandBar(initials: 'LM')));
 
       // `visibility:hidden` del diseño: no se ve, pero el hueco sigue ahí para
       // que el logo no se descentre entre pantallas.
@@ -36,16 +36,16 @@ void main() {
     testWidgets('en el home muestra las iniciales y la campana', (tester) async {
       var perfil = 0, notifs = 0;
       await tester.pumpWidget(_app(DsBrandBar(
-        initials: 'EH',
+        initials: 'LM',
         showActions: true,
         onProfile: () => perfil++,
         onNotifications: () => notifs++,
       )));
 
-      expect(find.text('EH'), findsOneWidget);
+      expect(find.text('LM'), findsOneWidget);
       expect(find.byIcon(Icons.notifications_none_rounded), findsOneWidget);
 
-      await tester.tap(find.text('EH'));
+      await tester.tap(find.text('LM'));
       await tester.tap(find.byIcon(Icons.notifications_none_rounded));
       await tester.pump();
       expect(perfil, 1);
@@ -54,7 +54,7 @@ void main() {
 
     testWidgets('el punto de no leídas se apaga cuando no hay', (tester) async {
       await tester.pumpWidget(_app(const DsBrandBar(
-        initials: 'EH',
+        initials: 'LM',
         showActions: true,
         hasUnread: false,
       )));
@@ -68,8 +68,8 @@ void main() {
     });
 
     test('las iniciales salen del nombre completo', () {
-      expect(DsBrandBar.initialsOf('Emmanuel Hernández Ríos'), 'EH');
-      expect(DsBrandBar.initialsOf('Emmanuel'), 'EM');
+      expect(DsBrandBar.initialsOf('Laura Méndez Soto'), 'LM');
+      expect(DsBrandBar.initialsOf('Laura'), 'LA');
       expect(DsBrandBar.initialsOf('  '), '—');
     });
   });

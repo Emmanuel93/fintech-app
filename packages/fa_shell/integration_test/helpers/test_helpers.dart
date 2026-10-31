@@ -155,7 +155,22 @@ extension TestExtensions on WidgetTester {
     await tap(field, warnIfMissed: false);
     await pump(const Duration(milliseconds: 600));
 
-    final item = find.text(option).last;
+    // La opción se busca DENTRO de la hoja: detrás puede haber otro campo con el mismo texto
+    // —el estado de nacimiento ya trae «Sinaloa» del OCR— y tocarlo no elige nada.
+    Finder enLaHoja() => find.descendant(
+        of: find.byType(Scrollbar), matching: find.text(option));
+
+    // La lista es perezosa y sólo construye lo visible: Sinaloa es la #25 de 32. Si no está a la
+    // vista se usa el buscador de la hoja, que es el arreglo que la hizo alcanzable.
+    if (enLaHoja().evaluate().isEmpty) {
+      final buscador = find.byType(TextField);
+      if (buscador.evaluate().isNotEmpty) {
+        await enterText(buscador.last, option);
+        await pump(const Duration(milliseconds: 600));
+      }
+    }
+
+    final item = enLaHoja().evaluate().isNotEmpty ? enLaHoja().first : find.text(option).last;
     if (item.evaluate().isEmpty) {
       fail('Opción "$option" no está en el selector "$label"');
     }

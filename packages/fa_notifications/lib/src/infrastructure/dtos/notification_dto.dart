@@ -30,7 +30,7 @@ class NotificationDto {
         type: _parseType(type),
         title: title,
         body: body,
-        date: DateTime.parse(date),
+        date: DateTime.parse(date).toLocal(),
         isRead: isRead,
         actionRoute: actionRoute,
       );

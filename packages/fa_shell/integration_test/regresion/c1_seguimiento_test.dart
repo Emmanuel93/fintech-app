@@ -109,11 +109,18 @@ void main() {
     // ── Liquidación ─────────────────────────────────────────────────────────
     // Por el mismo canal que usa la app (`POST /credit/payment` del BFF), no contra el servicio
     // de dominio: si el cobro se rompe en el canal, esto tiene que enterarse.
-    await pagar(token, deuda);
-    await Future<void>.delayed(const Duration(seconds: 3));
+    // Se paga cuando el devengo terminó de llegar, no a mitad de la fila (ver `adeudoEstable`).
+    final pagado = await liquidar(token);
+    expect(pagado, greaterThanOrEqualTo(deuda - 0.01),
+        reason: 'se paga por lo menos lo que se debía al leer la cuenta');
 
-    final despues = await cuentaDeCredito(token);
-    expect(despues?['status'], 'SETTLED',
+    // El cierre de la cuenta es asíncrono: se espera a que cartera lo aplique.
+    String? estatus;
+    for (var i = 0; i < 15 && estatus != 'SETTLED'; i++) {
+      estatus = (await cuentaDeCredito(token))?['status'] as String?;
+      if (estatus != 'SETTLED') await Future<void>.delayed(const Duration(seconds: 2));
+    }
+    expect(estatus, 'SETTLED',
         reason: 'pagado el adeudo total, la cuenta debe quedar SETTLED');
     paso('Cuenta liquidada en el backend');
 

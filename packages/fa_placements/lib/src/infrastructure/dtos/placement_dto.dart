@@ -57,7 +57,9 @@ class PlacementDto {
         commissionAccrued: commissionAccrued?.toDouble() ?? 0,
         paymentsMade: paymentsMade ?? 0,
         daysPastDue: daysPastDue ?? 0,
-        placedOn: DateTime.tryParse(placedOn ?? ''),
-        inviteExpiresAt: DateTime.tryParse(inviteExpiresAt ?? ''),
+        // El backend manda instantes en UTC (`2026-10-31T01:50:00Z`). Sin `toLocal()` la tarjeta
+        // pintaba la fecha de Greenwich: una colocación de las 19:50 en México decía «31 oct».
+        placedOn: DateTime.tryParse(placedOn ?? '')?.toLocal(),
+        inviteExpiresAt: DateTime.tryParse(inviteExpiresAt ?? '')?.toLocal(),
       );
 }

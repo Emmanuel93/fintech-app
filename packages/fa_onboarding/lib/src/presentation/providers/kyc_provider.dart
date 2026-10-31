@@ -9,6 +9,7 @@ import '../../domain/entities/document_file.dart';
 import '../../domain/entities/kyc_documents.dart';
 import '../../domain/entities/kyc_status.dart';
 import '../../domain/entities/ocr_extracted_data.dart';
+import '../../domain/services/estado_de_domicilio.dart';
 import '../../domain/entities/personal_data.dart';
 
 class KycProvider extends ChangeNotifier with SafeNotifier {
@@ -215,6 +216,8 @@ class KycProvider extends ChangeNotifier with SafeNotifier {
       curp: pick(current.curp, ocr.curp),
       genero: pick(current.genero, ocr.genero),
       estadoNacimiento: pick(current.estadoNacimiento, ocr.estadoNacimiento),
+      // El estado del domicilio también viene en la INE, dentro de la dirección.
+      estado: pick(current.estado, estadoDesdeDomicilio(ocr.domicilio)),
       fechaNacimiento: fecha,
     );
   }

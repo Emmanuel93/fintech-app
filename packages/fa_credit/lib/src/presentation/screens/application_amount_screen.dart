@@ -44,6 +44,8 @@ class _ApplicationAmountScreenState extends State<ApplicationAmountScreen> {
     if (!mounted) return;
     if (ok) {
       context.go('/credit/apply/status');
+    } else if (provider.identityHold != null) {
+      context.go('/credit/apply/identity');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(provider.error ?? 'No se pudo enviar.')),

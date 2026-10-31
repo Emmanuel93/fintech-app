@@ -1,11 +1,11 @@
 /// Presentación de nombres de persona.
 extension NombrePropio on String {
-  /// "EMMANUEL RAMÍREZ HERNÁNDEZ" → "Emmanuel Ramírez Hernández".
+  /// "LAURA MÉNDEZ SOTO" → "Laura Méndez Soto".
   ///
   /// Los nombres llegan **en mayúsculas** porque así los guarda la INE y así
   /// los devuelve el expediente. Gritarle el nombre al usuario en cada pantalla
   /// es de formulario de gobierno, no de una app; y en un saludo —"Hola,
-  /// EMMANUEL"— se lee como un regaño.
+  /// LAURA"— se lee como un regaño.
   ///
   /// Las partículas de los apellidos compuestos se quedan en minúscula, que es
   /// como se escriben en español: "JUAN DE LA CRUZ" → "Juan de la Cruz". No se

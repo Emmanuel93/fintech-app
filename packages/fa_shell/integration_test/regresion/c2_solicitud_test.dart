@@ -40,15 +40,31 @@ void main() {
     };
 
     final phone = TestData.uniquePhone();
-    final curp = TestData.uniqueCurp();
+    // La CURP la puede fijar el orquestador: es la que lleva la INE de muestra que generó para
+    // esta corrida, y la mesa de cumplimiento compara una contra la otra.
+    const curpDefinida = String.fromEnvironment('RE2E_CURP');
+    final curp = curpDefinida.isNotEmpty ? curpDefinida : TestData.uniqueCurp();
     const password = TestData.password;
     paso('Distribuidora — teléfono $phone · CURP $curp');
 
     local_app.main();
     await tester.waitSplash();
 
-    await tester.goToIdentityStep(phone: phone, purpose: CreditPurpose.distribuidor);
+    // El alta va desarmada en sus pasos —el mismo orden que goToIdentityStep— para poder marcar
+    // cada momento de la historia del video donde de verdad ocurre.
+    historia('proposito');
+    await tester.goToPhoneEntry(purpose: CreditPurpose.distribuidor);
     paso('CHECKPOINT — propósito «Para colocar a terceros»');
+    historia('celular');
+    await tester.enterField('Número celular', phone);
+    await tester.enterField('Correo electrónico', TestData.email);
+    await tester.pumpAndSettle();
+    await tester.respira();
+    await tester.tapButton('Continuar');
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+    await tester.enterPinCode(TestData.otp);
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+    historia('documentos');
     await tester.captureDocumentsOnly();
     // Mismo orden que en el caso 1: el chip de OCR se afirma en la pestaña Documentos, antes de
     // que «Leer mis documentos» pase a Datos.
@@ -60,10 +76,12 @@ void main() {
     await tester.tapButton('Leer mis documentos');
     await tester.pumpAndSettle();
 
+    historia('datos');
     await tester.fillIdentityData(curp: curp);
     await tester.tapButton('Todo está correcto');
     await tester.pumpAndSettle();
 
+    historia('contrasena');
     await tester.completePasswordStep(
       landing: find.text('Inicio'),
       reason: 'la línea de distribuidor pasa a comité: el análisis lleva al home',
